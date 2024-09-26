@@ -2,10 +2,13 @@ package com.englishaoe.lesson.controllers;
 
 import com.englishaoe.lesson.config.AppConfig;
 import com.englishaoe.lesson.database.entity.Student;
+import com.englishaoe.lesson.dto.LoginResponse;
+import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.utility.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -19,24 +22,21 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtUtil jwtUtil;
-    private Student testStudent;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Student student){
-        student.setPassword(passwordEncoder.encode(student.getPassword()));
-        testStudent = student;//TEST!
         //Some repo for save user
-        System.out.print("TEST");
         return ResponseEntity.ok("Registration is succeed");
     }
     @PostMapping("/login")
-    public String login(@RequestBody Student student){
+    public ResponseEntity<LoginResponse> login(@RequestBody Student student){
+        /*Remove condition and add search and result from database*/
         if(student.getUsername().equals("Pavel")
                 && passwordEncoder.matches(student.getPassword(), passwordEncoder.encode("123456"))){
-            System.out.print("Try to return");
-            return jwtUtil.generateToken(student.getUsername());
+            LoginResponse loginResponse = new LoginResponse(jwtUtil.generateToken(student.getUsername()));
+            return ResponseEntity.ok(loginResponse);
         }
-        throw new RuntimeException("Invalid credentials");
+        throw new RegularException("Invalid user credential", HttpStatus.UNAUTHORIZED.value());
     }
     @GetMapping("/validate")
     public String validateTokenTest(@RequestHeader("Authorization") String token){
