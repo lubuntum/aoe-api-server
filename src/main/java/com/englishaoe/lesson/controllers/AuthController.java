@@ -1,7 +1,7 @@
 package com.englishaoe.lesson.controllers;
 
 import com.englishaoe.lesson.config.AppConfig;
-import com.englishaoe.lesson.database.entity.Student;
+import com.englishaoe.lesson.database.entity.Customer;
 import com.englishaoe.lesson.dto.LoginResponse;
 import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.utility.JwtUtil;
@@ -24,16 +24,16 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Student student){
+    public ResponseEntity<String> register(@RequestBody Customer customer){
         //Some repo for save user
         return ResponseEntity.ok("Registration is succeed");
     }
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody Student student){
+    public ResponseEntity<LoginResponse> login(@RequestBody Customer customer){
         /*Remove condition and add search and result from database*/
-        if(student.getUsername().equals("Pavel")
-                && passwordEncoder.matches(student.getPassword(), passwordEncoder.encode("123456"))){
-            LoginResponse loginResponse = new LoginResponse(jwtUtil.generateToken(student.getUsername()));
+        if(customer.getUsername().equals("Pavel")
+                && passwordEncoder.matches(customer.getPassword(), passwordEncoder.encode("123456"))){//?? ????
+            LoginResponse loginResponse = new LoginResponse(jwtUtil.generateToken(String.valueOf(customer.getId())));
             return ResponseEntity.ok(loginResponse);
         }
         throw new RegularException("Invalid user credential", HttpStatus.UNAUTHORIZED.value());
