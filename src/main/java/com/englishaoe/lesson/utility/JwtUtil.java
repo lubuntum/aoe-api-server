@@ -5,15 +5,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
-import org.springframework.security.config.annotation.rsocket.RSocketSecurity;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 @Component
 public class JwtUtil {
@@ -36,16 +33,16 @@ public class JwtUtil {
                 .compact();
     }
     public boolean validateToken(String token, String username){
-        final String extractedUsername = extractUsername(token);
+        final String extractedUsername = extractSubject(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
     private boolean isTokenExpired(String token){
         return extractExpiration(token).before(new Date());
     }
-    private Date extractExpiration(String token){
+    public Date extractExpiration(String token){
         return Jwts.parser().setSigningKey(env.getProperty(AppConfig.SECRET_KEY_PROPERTY).getBytes()).parseClaimsJws(token).getBody().getExpiration();
     }
-    private String extractUsername(String token){
-        return Jwts.parser().setSigningKey(env.getProperty(AppConfig.SECRET_KEY_PROPERTY).getBytes()).parseClaimsJws(token).getBody().getSubject();
+    public String extractSubject(String token){
+        return Jwts.parser().setSigningKey(env.getProperty(AppConfig.SECRET_KEY_PROPERTY).getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody().getSubject();
     }
 }
