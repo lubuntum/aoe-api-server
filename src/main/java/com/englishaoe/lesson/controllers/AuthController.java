@@ -30,10 +30,10 @@ public class AuthController {
     }
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody Customer customer){
-        /*Remove condition and add search and result from database*/
+        /*Remove condition and add search and result from database, now test id = 123*/
         if(customer.getUsername().equals("Pavel")
                 && passwordEncoder.matches(customer.getPassword(), passwordEncoder.encode("123456"))){//?? ????
-            LoginResponse loginResponse = new LoginResponse(jwtUtil.generateToken(String.valueOf(customer.getId())));
+            LoginResponse loginResponse = new LoginResponse(jwtUtil.generateToken(String.valueOf(123)));
             return ResponseEntity.ok(loginResponse);
         }
         throw new RegularException("Invalid user credential", HttpStatus.UNAUTHORIZED.value());
