@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 /**
  *  Class contains all data needed for user login, despite
- *  the fact is that Student of Teacher user
+ *  the fact is that Student or Expert
  * */
 @Data
 @NoArgsConstructor

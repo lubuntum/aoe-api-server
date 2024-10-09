@@ -15,7 +15,7 @@ public class TaskType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String type;
+    Integer type;
     @OneToMany(mappedBy = "taskType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> tasks;
 }
