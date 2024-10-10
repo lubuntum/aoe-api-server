@@ -2,6 +2,8 @@ package com.englishaoe.lesson.controllers;
 
 import com.englishaoe.lesson.database.entity.Customer;
 import com.englishaoe.lesson.database.services.TestVariantsGeneratorServices;
+import com.englishaoe.lesson.dto.account.CustomerAccountDTO;
+import com.englishaoe.lesson.dto.account.CustomerAccountMapper;
 import com.englishaoe.lesson.utility.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,16 +20,22 @@ public class AccountController {
     //TEST GENERATORS
     @Autowired
     JwtUtil jwtUtil;
+    @Autowired
+    CustomerAccountMapper accountMapper;
 
     //@PostMapping("/completed-variants")
     //public List<>
     @GetMapping("/customer")
-    public ResponseEntity<Customer> customerAccountData(@RequestHeader("Authorization") String token){
-        //TODO grab Customer id from token, then find him in database...
+    public ResponseEntity<CustomerAccountDTO> customerAccountData(@RequestHeader("Authorization") String token){
+        //TODO
+        // 1. grab Customer id from token, then find him in database...
+        // 2. translate Customer + actual date of subscription buying to CustomerAccountDTO and send it
         String extractedIdTest = jwtUtil.extractSubject(token);
-        Customer customer = new Customer(Long.valueOf(jwtUtil.extractSubject(token)),
+        Customer testCustomer = new Customer(Long.valueOf(jwtUtil.extractSubject(token)),
                 "Pavel", "Pavel@gmail.com", "hashPass",
-                "Павел","Большаков","25.09.2002", 8,1 );
-        return ResponseEntity.ok(customer);
+                "Павел","Большаков","25.09.2002", 12,1 );
+
+        //return DTO
+        return ResponseEntity.ok(accountMapper.toDTO(testCustomer));
     }
 }
