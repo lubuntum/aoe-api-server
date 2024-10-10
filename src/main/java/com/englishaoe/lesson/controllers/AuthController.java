@@ -2,7 +2,7 @@ package com.englishaoe.lesson.controllers;
 
 import com.englishaoe.lesson.config.AppConfig;
 import com.englishaoe.lesson.database.entity.Customer;
-import com.englishaoe.lesson.dto.LoginResponse;
+import com.englishaoe.lesson.dto.LoginResponseDTO;
 import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.utility.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -29,12 +29,12 @@ public class AuthController {
         return ResponseEntity.ok("Registration is succeed");
     }
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody Customer customer){
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody Customer customer){
         /*Remove condition and add search and result from database, now test id = 123*/
         if(customer.getUsername().equals("Pavel")
-                && passwordEncoder.matches(customer.getPassword(), passwordEncoder.encode("123456"))){//?? ????
-            LoginResponse loginResponse = new LoginResponse(jwtUtil.generateToken(String.valueOf(123)));
-            return ResponseEntity.ok(loginResponse);
+                && passwordEncoder.matches(customer.getPassword(), passwordEncoder.encode("123456"))){
+            LoginResponseDTO loginResponseDTO = new LoginResponseDTO(jwtUtil.generateToken(String.valueOf(123)));
+            return ResponseEntity.ok(loginResponseDTO);
         }
         throw new RegularException("Invalid user credential", HttpStatus.UNAUTHORIZED.value());
     }
