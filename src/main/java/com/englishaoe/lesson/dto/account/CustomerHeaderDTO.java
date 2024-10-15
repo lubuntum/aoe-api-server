@@ -4,9 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class CustomerHeaderDTO {
     private String username;
     private Integer attemptsAI;
     private Integer attemptsExpert;
+    public CustomerHeaderDTO(String username, Integer attemptsAI, Integer attemptsExpert){
+        this.username = username;
+        this.attemptsAI = attemptsAI;
+        this.attemptsExpert = attemptsExpert;
+    }
 }

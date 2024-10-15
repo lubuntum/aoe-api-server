@@ -13,6 +13,9 @@ public class CustomerAccountDTO {
     private String registrationDate;
     private Integer attemptsAI;
     private Integer attemptsExpert;
+    //Actual date of purchasing subscription
     private String actualSubscriptionDate;
+    //Name for organization or individual who invited customer
+    private String partnerName;
 
 }

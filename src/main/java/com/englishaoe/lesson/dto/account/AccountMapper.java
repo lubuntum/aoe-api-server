@@ -13,7 +13,7 @@ public class AccountMapper {
         //PackageTransactionRepository.getActualTransaction(transactions); // find it
         return new CustomerAccountDTO(customer.getUsername()
                 , customer.getEmail(),customer.getName(),customer.getSecondName(),
-                customer.getRegistrationDate(), customer.getAttemptsAI(), customer.getAttemptsExpert(), "28.09.2024");
+                customer.getRegistrationDate(), customer.getAttemptsAI(), customer.getAttemptsExpert(), "28.09.2024", "OAO English");
     }
     public CustomerHeaderDTO customerToHeaderDTO(Customer customer){
         return new CustomerHeaderDTO(customer.getUsername(), customer.getAttemptsAI(), customer.getAttemptsExpert());
