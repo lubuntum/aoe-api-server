@@ -19,9 +19,9 @@ public class JwtUtil {
     public JwtUtil(Environment env){
         this.env = env;
     }
-    public String generateToken(String username){
+    public String generateToken(String data){
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+        return createToken(claims, data);
     }
     private String createToken(Map<String, Object> claims, String subject){
         return Jwts.builder()
