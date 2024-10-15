@@ -2,9 +2,13 @@ package com.englishaoe.lesson.controllers;
 
 import com.englishaoe.lesson.config.AppConfig;
 import com.englishaoe.lesson.database.entity.Customer;
-import com.englishaoe.lesson.dto.LoginResponseDTO;
+import com.englishaoe.lesson.database.repository.CustomerRepository;
+import com.englishaoe.lesson.database.services.CustomerServices;
+import com.englishaoe.lesson.dto.authorization.CustomerAuthDTO;
+import com.englishaoe.lesson.dto.authorization.LoginResponseDTO;
 import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.utility.JwtUtil;
+import com.englishaoe.lesson.utility.PassValidationUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,10 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private PassValidationUtil passValidationUtil;
+    @Autowired
+    private CustomerServices customerServices;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Customer customer){
@@ -29,13 +37,11 @@ public class AuthController {
         return ResponseEntity.ok("Registration is succeed");
     }
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody Customer customer){
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody CustomerAuthDTO customerAuthDTO){
+        CustomerAuthDTO customerCredential = customerServices.getCustomerCredentialByUsername(customerAuthDTO.getUsername());
+        if (passValidationUtil.validatePassword(customerAuthDTO.getPassword(), customerCredential.getPassword()))
+            return ResponseEntity.ok(new LoginResponseDTO(jwtUtil.generateToken(String.valueOf(customerCredential.getId()))));
         /*Remove condition and add search and result from database, now test id = 123*/
-        if(customer.getUsername().equals("Pavel")
-                && passwordEncoder.matches(customer.getPassword(), passwordEncoder.encode("123456"))){
-            LoginResponseDTO loginResponseDTO = new LoginResponseDTO(jwtUtil.generateToken(String.valueOf(123)));
-            return ResponseEntity.ok(loginResponseDTO);
-        }
         throw new RegularException("Invalid user credential", HttpStatus.UNAUTHORIZED.value());
     }
     @GetMapping("/validate")
