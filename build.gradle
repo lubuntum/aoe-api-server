@@ -24,7 +24,11 @@ repositories {
 }
 
 dependencies {
-
+	// SQLITE temp.
+	//implementation 'org.xerial:sqlite-jdbc:3.41.2.1'
+	//implementation 'org.hibernate.orm:hibernate-community-dialects:6.6.1.Final'
+	//Postgres
+	implementation 'org.postgresql:postgresql:42.6.0'
 	// JAXB dependencies
 	implementation 'javax.xml.bind:jaxb-api:2.3.1' // or the latest version
 	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1' // or the latest version
