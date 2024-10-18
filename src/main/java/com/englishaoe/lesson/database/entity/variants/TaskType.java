@@ -11,11 +11,14 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "task_type")
 public class TaskType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     Long id;
+    @Column(name = "type")
     Integer type;
-    @OneToMany(mappedBy = "taskType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "taskType", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Task> tasks;
 }

@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 public class SubscriptionTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @Column(name = "id")
+    private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")//change to subscription_id
     private Subscription subscription;
