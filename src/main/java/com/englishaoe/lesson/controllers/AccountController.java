@@ -20,8 +20,6 @@ import java.util.List;
 public class AccountController {
     @Autowired
     JwtUtil jwtUtil;
-    @Autowired
-    AccountMapper accountMapper;
     //repository services
     @Autowired
     CustomerServices customerServices;
@@ -30,9 +28,6 @@ public class AccountController {
     //public List<>
     @GetMapping("/customer")
     public ResponseEntity<CustomerAccountDTO> customerAccountData(@RequestHeader("Authorization") String token){
-        //TODO
-        // 1. grab Customer id from token, then find him in resrives DTO...
-        // 2. validate by token before
         CustomerAccountDTO customerAccountDTO = customerServices.getCustomerAccountDataById(Long.valueOf(jwtUtil.extractSubject(token)));
         //return DTO
         return ResponseEntity.ok(customerAccountDTO);
@@ -40,8 +35,6 @@ public class AccountController {
     @GetMapping("/header")
     public ResponseEntity<CustomerHeaderDTO> headerData(@RequestHeader("Authorization") String token) {
         try {
-            //TODO
-            // 1. grab Customer id from token, then find him in database repository DTO...
             CustomerHeaderDTO customerHeaderDTO = customerServices.getCustomerHeaderDataById(Long.valueOf(jwtUtil.extractSubject(token)));
             return ResponseEntity.ok(customerHeaderDTO);
         }
