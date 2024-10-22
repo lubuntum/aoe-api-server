@@ -1,5 +1,6 @@
 package com.englishaoe.lesson.database.entity.variants;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class Variant {
     @Column(name = "theme")
     private String theme;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Task> variantTasks;
 }
