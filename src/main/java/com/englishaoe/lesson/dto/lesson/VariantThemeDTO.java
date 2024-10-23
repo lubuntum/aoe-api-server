@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VariantThemeDTO {
+    private Long id;
     private String theme;
 
 }
