@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VariantDTO {
+public class VariantThemeDTO {
     private String theme;
 
 }
