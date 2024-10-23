@@ -1,5 +1,6 @@
 package com.englishaoe.lesson.database.entity.variants;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class TaskType {
     Long id;
     @Column(name = "type")
     Integer type;
-    @JsonManagedReference
+    @JsonBackReference
     @OneToMany(mappedBy = "taskType", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Task> tasks;
 }

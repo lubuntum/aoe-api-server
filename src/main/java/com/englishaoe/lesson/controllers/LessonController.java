@@ -2,8 +2,8 @@ package com.englishaoe.lesson.controllers;
 
 import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.services.VariantService;
-import com.englishaoe.lesson.dto.authorization.CustomerAuthDTO;
-import com.englishaoe.lesson.dto.lesson.VariantDTO;
+import com.englishaoe.lesson.dto.lesson.TaskDTO;
+import com.englishaoe.lesson.dto.lesson.VariantThemeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,13 +21,13 @@ public class LessonController {
     @Autowired
     VariantService variantService;
     @GetMapping("/variants")
-    public ResponseEntity<List<VariantDTO>> variantsData(){
+    public ResponseEntity<List<VariantThemeDTO>> variantsData(){
         return ResponseEntity.ok(variantService.getAllVariantsDTO());
     }
 
-    @GetMapping("/variant/{id}")
-    public ResponseEntity<Variant> getVariantById(@PathVariable("id") Long id){
-        Variant variant = variantService.getVariantById(id);
-        return ResponseEntity.ok(variant);
+    @GetMapping("/variant/{id}/tasks")
+    public ResponseEntity<List<TaskDTO>> getVariantById(@PathVariable("id") Long id){
+        List<TaskDTO> taskList = variantService.getTasksByVariantId(id);
+        return ResponseEntity.ok(taskList);
     }
 }
