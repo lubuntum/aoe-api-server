@@ -18,6 +18,6 @@ public class Exam {
     @Column(name = "variant_id")
     private Long variantId;
     @Column(name = "exam_complete_date")
-    private String exam;
+    private String examCompleteDate;
 
 }

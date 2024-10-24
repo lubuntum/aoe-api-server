@@ -2,6 +2,7 @@ package com.englishaoe.lesson.controllers;
 
 import com.englishaoe.lesson.database.entity.results.Exam;
 import com.englishaoe.lesson.database.entity.variants.Variant;
+import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.VariantService;
 import com.englishaoe.lesson.dto.lesson.TaskDTO;
 import com.englishaoe.lesson.dto.lesson.VariantThemeDTO;
@@ -20,6 +21,8 @@ public class LessonController {
     @Autowired
     VariantService variantService;
     @Autowired
+    ExamService examService;
+    @Autowired
     JwtUtil jwtUtil;
     @GetMapping("/variants")
     public ResponseEntity<List<VariantThemeDTO>> variantsData(){
@@ -32,10 +35,10 @@ public class LessonController {
         return ResponseEntity.ok(taskList);
     }
     @PostMapping("/exam")
-    public ResponseEntity<String> createExam(@RequestParam("variantId") Long variantId,
+    public ResponseEntity<String> createExam(@RequestBody Exam exam,
                                              @RequestHeader("Authorization") String token){
         Long customerId = Long.valueOf(jwtUtil.extractSubject(token));
-        //Exam exam = new Exam()
+
     return ResponseEntity.ok("Exam created successfully");
     }
 }
