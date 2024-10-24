@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TaskDTO {
+    Long id;
     String taskContent;
     int taskType;
 }
