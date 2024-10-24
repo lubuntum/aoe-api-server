@@ -16,7 +16,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable() // Disable CSRF protection for REST API
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/**").permitAll() // Allow access to authentication endpoints
+                        .requestMatchers("/api/**").permitAll()//jwt in work
+                        .requestMatchers("/images/**").permitAll()
+                        .requestMatchers("/voices/**").permitAll()// Allow access to authentication endpoints
                         .anyRequest().authenticated() // Protect all other endpoints
                 );
         return http.build();
