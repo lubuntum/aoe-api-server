@@ -17,6 +17,8 @@ public class Exam {
     private Long id;
     @Column(name = "variant_id")
     private Long variantId;
+    @Column(name = "user_id")
+    private Long userId;
     @Column(name = "exam_complete_date")
     private String examCompleteDate;
 
