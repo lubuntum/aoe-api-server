@@ -1,7 +1,9 @@
 package com.englishaoe.lesson.database.services;
 
+import com.englishaoe.lesson.database.entity.variants.Task;
 import com.englishaoe.lesson.database.entity.variants.TaskType;
 import com.englishaoe.lesson.database.entity.variants.Variant;
+import com.englishaoe.lesson.database.repository.TaskRepository;
 import com.englishaoe.lesson.database.repository.VariantRepository;
 import com.englishaoe.lesson.dto.lesson.TaskDTO;
 import com.englishaoe.lesson.dto.lesson.VariantThemeDTO;
@@ -15,6 +17,8 @@ import java.util.List;
 public class VariantService {
     @Autowired
     private VariantRepository variantRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
     public List<VariantThemeDTO> getAllVariantsDTO(){
         return variantRepository.findAllVariantsThemesData();
@@ -32,6 +36,9 @@ public class VariantService {
     }
     public List<TaskDTO> getTasksByVariantId(Long variantId){
         return variantRepository.findTasksByVariantId(variantId);
+    }
+    public void saveTask(Task task){
+        taskRepository.save(task);
     }
 
 }
