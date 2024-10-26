@@ -18,7 +18,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/**").permitAll()//jwt in work
                         .requestMatchers("/images/**").permitAll()
-                        .requestMatchers("/voices/**").permitAll()// Allow access to authentication endpoints
+                        .requestMatchers("/voices/**").permitAll()// temp access
                         .anyRequest().authenticated() // Protect all other endpoints
                 );
         return http.build();
