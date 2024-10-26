@@ -1,16 +1,28 @@
 package com.englishaoe.lesson.controllers;
 
+import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.Exam;
+import com.englishaoe.lesson.database.entity.variants.Task;
 import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.VariantService;
+import com.englishaoe.lesson.dto.lesson.ExamDTO;
 import com.englishaoe.lesson.dto.lesson.TaskDTO;
 import com.englishaoe.lesson.dto.lesson.VariantThemeDTO;
+import com.englishaoe.lesson.exceptions.RegularException;
+import com.englishaoe.lesson.utility.AudioFileUtil;
 import com.englishaoe.lesson.utility.JwtUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 //TODO try to get Variant with List<Task> where each Task has TaskType field
 // 1. Can use DTO like VariantExam
@@ -24,8 +36,10 @@ public class LessonController {
     ExamService examService;
     @Autowired
     JwtUtil jwtUtil;
+    @Autowired
+    AudioFileUtil audioFileUtil;
     @GetMapping("/variants")
-    public ResponseEntity<List<VariantThemeDTO>> variantsData(){
+    public ResponseEntity<List<VariantThemeDTO>> variantsData() throws SQLException {
         return ResponseEntity.ok(variantService.getAllVariantsDTO());
     }
 
@@ -35,10 +49,22 @@ public class LessonController {
         return ResponseEntity.ok(taskList);
     }
     @PostMapping("/exam")
-    public ResponseEntity<String> createExam(@RequestBody Exam exam,
-                                             @RequestHeader("Authorization") String token){
-        Long customerId = Long.valueOf(jwtUtil.extractSubject(token));
+    public ResponseEntity<ExamDTO> createExam(@RequestBody Exam exam,
+                                              @RequestHeader("Authorization") String token){
+        exam.setUserId(Long.valueOf(jwtUtil.extractSubject(token)));
+        examService.createExam(exam);
 
-    return ResponseEntity.ok("Exam created successfully");
+    return ResponseEntity.ok(new ExamDTO(exam.getId(), exam.getExamCompleteDate()));
+    }
+    @PostMapping("/user-task")
+    public ResponseEntity<String> saveTaskResult(@RequestParam("file") MultipartFile file,
+                                                 @RequestPart("customerTask") CustomerTask customerTask,
+                                                 @RequestHeader("Authorization") String token) throws JsonProcessingException, SQLException {
+        if (file.isEmpty()) throw new RegularException("file is empty", HttpStatus.BAD_REQUEST.value());
+        customerTask.setCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
+        customerTask.setAudioPath(audioFileUtil.saveAudioFile(file));
+        customerTask.setAnswer("{}");
+        examService.saveCustomerTask(customerTask);
+        return ResponseEntity.ok("Task Result saved");
     }
 }
