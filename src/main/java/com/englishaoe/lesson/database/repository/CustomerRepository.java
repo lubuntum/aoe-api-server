@@ -16,8 +16,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT new com.englishaoe.lesson.dto.account.CustomerAccountDTO(" +
             "c.username, c.email, c.name, c.secondName, c.registrationDate, c.attemptsAI, c.attemptsExpert, c.actualSubscriptionDate," +
             "p.partnerName) FROM Customer c " +
-            "JOIN c.promocodeList pc " +
-            "JOIN pc.partner p " +
+            "LEFT JOIN c.promocodeList pc " +
+            "LEFT JOIN pc.partner p " +
             "WHERE c.id=:id")
     CustomerAccountDTO findCustomerAccountData(@Param("id") Long id);
 
