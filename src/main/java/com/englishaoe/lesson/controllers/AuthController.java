@@ -31,10 +31,17 @@ public class AuthController {
     @Autowired
     private CustomerServices customerServices;
 
-    @PostMapping("/register")
+    @PostMapping("/registration")
     public ResponseEntity<String> register(@RequestBody Customer customer){
-        //Some repo for save user
-        return ResponseEntity.ok("Registration is succeed");
+        if (customer == null)
+            throw new RegularException("No customer data provided", HttpStatus.BAD_REQUEST.value());
+        if (customerServices.emailExists(customer.getEmail()))
+            throw new RegularException("Email already exists", HttpStatus.CONFLICT.value());
+        customer.setPassword(passValidationUtil.hashPassword(customer.getPassword()));
+        Customer savedCustomer = customerServices.saveCustomer(customer);
+        if (savedCustomer == null)
+            throw new RegularException("Unexpected error occurred while saving customer", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return ResponseEntity.status(HttpStatus.CREATED).body("Registration succeed");
     }
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody CustomerAuthDTO customerAuthDTO){

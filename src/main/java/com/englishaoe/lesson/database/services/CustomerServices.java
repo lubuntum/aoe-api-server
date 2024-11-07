@@ -24,4 +24,10 @@ public class CustomerServices {
     public CustomerAuthDTO getCustomerCredentialByUsername(String username){
         return customerRepository.findCustomerCredentialDataByUsername(username);
     }
+    public Customer saveCustomer(Customer customer) {
+        return customerRepository.save(customer);
+    }
+    public boolean emailExists(String email) {
+        return customerRepository.findByEmail(email) != null;
+    }
 }

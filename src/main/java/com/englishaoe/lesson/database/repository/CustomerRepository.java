@@ -24,4 +24,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT new com.englishaoe.lesson.dto.authorization.CustomerAuthDTO(c.id, c.username, c.password) " +
             "FROM Customer c WHERE c.username = :username")
     CustomerAuthDTO findCustomerCredentialDataByUsername(@Param("username") String username);
+    Customer findByEmail(String email);
 }
