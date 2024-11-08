@@ -14,7 +14,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     Environment env;
     @Value("${image.folderDir}")
-    private String folderDir;
+    private String imageDir;
+    @Value("${audio.folderDir}")
+    private String voicesDir;
     @Autowired
     public WebConfig(Environment env){
         this.env = env;
@@ -31,6 +33,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:" + folderDir + "/");
+                .addResourceLocations("file:" + imageDir + "/");
+        registry.addResourceHandler("/voices/**")
+                .addResourceLocations("file:" + voicesDir + "/");
     }
 }
