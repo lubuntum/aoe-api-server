@@ -21,7 +21,7 @@ public class AudioFileUtil {
             String filePath = folderDir + file.getOriginalFilename();
             File destinationFile = new File(filePath);
             file.transferTo(destinationFile);
-            return filePath;
+            return "voices/" + file.getOriginalFilename();
         } catch (IOException e) {
             return e.getMessage();
         }
