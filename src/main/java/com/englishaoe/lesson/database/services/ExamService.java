@@ -7,6 +7,8 @@ import com.englishaoe.lesson.database.repository.ExamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ExamService {
     //exam and customerTask related and connected, use in one ExamService
@@ -19,5 +21,8 @@ public class ExamService {
     }
     public void saveCustomerTask(CustomerTask customerTask){
         customerTaskRepository.save(customerTask);
+    }
+    public List<CustomerTask> getCustomerTaskByExamId(Long examId){
+        return customerTaskRepository.findByExamId(examId);
     }
 }

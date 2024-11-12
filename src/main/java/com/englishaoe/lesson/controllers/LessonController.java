@@ -38,16 +38,23 @@ public class LessonController {
     JwtUtil jwtUtil;
     @Autowired
     AudioFileUtil audioFileUtil;
+    /** All available variants*/
     @GetMapping("/variants")
     public ResponseEntity<List<VariantThemeDTO>> variantsData() throws SQLException {
         return ResponseEntity.ok(variantService.getAllVariantsDTO());
     }
-
+    /** Get variant tasks by id*/
     @GetMapping("/variant/{id}/tasks")
     public ResponseEntity<List<TaskDTO>> getVariantById(@PathVariable("id") Long id){
         List<TaskDTO> taskList = variantService.getTasksByVariantId(id);
         return ResponseEntity.ok(taskList);
     }
+    @GetMapping("/result")
+    public ResponseEntity<List<CustomerTask>> getExamResults(@RequestParam("examId") Long examId){
+        List<CustomerTask> examTasks = examService.getCustomerTaskByExamId(examId);
+        return ResponseEntity.ok(examTasks);
+    }
+    /** Create exam and return exam id*/
     @PostMapping("/exam")
     public ResponseEntity<ExamDTO> createExam(@RequestBody Exam exam,
                                               @RequestHeader("Authorization") String token){
@@ -56,6 +63,7 @@ public class LessonController {
 
     return ResponseEntity.ok(new ExamDTO(exam.getId(), exam.getExamCompleteDate()));
     }
+    /** Save all data for task */
     @PostMapping("/user-task")
     public ResponseEntity<String> saveTaskResult(@RequestParam("file") MultipartFile file,
                                                  @RequestPart("customerTask") CustomerTask customerTask,
