@@ -21,7 +21,5 @@ public class TaskType {
     Long id;
     @Column(name = "type")
     Integer type;
-    @JsonBackReference
-    @OneToMany(mappedBy = "taskType", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Task> tasks;
+
 }

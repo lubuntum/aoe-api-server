@@ -16,6 +16,8 @@ public interface VariantRepository extends JpaRepository<Variant, Long> {
     List<VariantThemeDTO> findAllVariantsThemesData();
     @Query("SELECT new com.englishaoe.lesson.dto.lesson.TaskDTO(t.id, t.taskContent, tt.type) " +
             "FROM Task t JOIN t.taskType tt " +
-            "WHERE t.variant.id = :variantId")
+            "WHERE t.variantId = :variantId")
     List<TaskDTO> findTasksByVariantId(@Param("variantId") Long variantId);
+
+
 }

@@ -19,15 +19,12 @@ public class Task {
     private Long id;
     @Column(name = "task_type_id", insertable = false, updatable = false)
     private Long taskTypeId;
+    @Column(name = "variant_id")
+    private Long variantId;
     @Column(name = "task_content")
     private String taskContent;
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "variant_id")
-    private Variant variant;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "task_type_id")
     private TaskType taskType;
 }
