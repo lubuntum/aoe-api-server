@@ -6,6 +6,7 @@ import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.repository.TaskRepository;
 import com.englishaoe.lesson.database.repository.VariantRepository;
 import com.englishaoe.lesson.dto.lesson.TaskDTO;
+import com.englishaoe.lesson.dto.lesson.VariantDTO;
 import com.englishaoe.lesson.dto.lesson.VariantThemeDTO;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,11 @@ public class VariantService {
         variant.getVariantTasks().forEach((task -> {
             task.getTaskType();
         }));
-        TaskType test = variant.getVariantTasks().get(0).getTaskType();
-        System.out.print(test.getType());
+        //TaskType test = variant.getVariantTasks().get(0).getTaskType();
         return variant;
+    }
+    public List<Variant> getVariantsByIds(List<Long> variantsIds){
+        return variantRepository.findAllById(variantsIds);
     }
     public List<TaskDTO> getTasksByVariantId(Long variantId){
         return variantRepository.findTasksByVariantId(variantId);

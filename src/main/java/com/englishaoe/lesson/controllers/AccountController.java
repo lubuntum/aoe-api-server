@@ -1,13 +1,19 @@
 package com.englishaoe.lesson.controllers;
 
 import com.englishaoe.lesson.database.entity.Customer;
+import com.englishaoe.lesson.database.entity.results.Exam;
+import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.repository.CustomerRepository;
 import com.englishaoe.lesson.database.services.CustomerServices;
+import com.englishaoe.lesson.database.services.ExamService;
+import com.englishaoe.lesson.database.services.VariantService;
 import com.englishaoe.lesson.dto.account.CustomerAccountDTO;
 import com.englishaoe.lesson.dto.account.AccountMapper;
 import com.englishaoe.lesson.dto.account.CustomerHeaderDTO;
+import com.englishaoe.lesson.dto.lesson.VariantDTO;
 import com.englishaoe.lesson.exceptions.jwtkeys.JwtExpiredException;
 import com.englishaoe.lesson.utility.JwtUtil;
+import com.englishaoe.lesson.utility.filter.ExamFilter;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +28,14 @@ public class AccountController {
     JwtUtil jwtUtil;
     //repository services
     @Autowired
+    VariantService variantService;
+    @Autowired
     CustomerServices customerServices;
+    @Autowired
+    ExamService examService;
     //TODO add some method or filter for some routes which requier authentification like /customer, /header
-    //@PostMapping("/completed-variants")
-    //public List<>
+    @Autowired
+    ExamFilter examFilter;
     @GetMapping("/customer")
     public ResponseEntity<CustomerAccountDTO> customerAccountData(@RequestHeader("Authorization") String token){
         CustomerAccountDTO customerAccountDTO = customerServices.getCustomerAccountDataById(Long.valueOf(jwtUtil.extractSubject(token)));
@@ -46,5 +56,13 @@ public class AccountController {
     public ResponseEntity<CustomerAccountDTO> customerTest(@RequestHeader("Authorization") String token ){
         CustomerAccountDTO customerAccountDTO = customerServices.getCustomerAccountDataById(Long.valueOf(jwtUtil.extractSubject(token)));
         return ResponseEntity.ok(customerAccountDTO);
+    }
+    @GetMapping("/customer/completed-variants")
+    public ResponseEntity<List<Variant>> getCustomerCompletedVariants(@RequestHeader("Authorization") String token) {
+        List<Exam> exams = examService.getExamsByCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
+        List<Long> variantsIds =  examFilter.filterExamsByUniqueVariantId(exams);
+        List<Variant> variantsTest = variantService.getVariantsByIds(variantsIds);
+
+        return ResponseEntity.ok(variantsTest);
     }
 }
