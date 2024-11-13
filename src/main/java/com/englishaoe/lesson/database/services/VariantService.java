@@ -6,7 +6,6 @@ import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.repository.TaskRepository;
 import com.englishaoe.lesson.database.repository.VariantRepository;
 import com.englishaoe.lesson.dto.lesson.TaskDTO;
-import com.englishaoe.lesson.dto.lesson.VariantDTO;
 import com.englishaoe.lesson.dto.lesson.VariantThemeDTO;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

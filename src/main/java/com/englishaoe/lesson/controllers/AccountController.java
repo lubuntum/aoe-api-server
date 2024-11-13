@@ -10,7 +10,6 @@ import com.englishaoe.lesson.database.services.VariantService;
 import com.englishaoe.lesson.dto.account.CustomerAccountDTO;
 import com.englishaoe.lesson.dto.account.AccountMapper;
 import com.englishaoe.lesson.dto.account.CustomerHeaderDTO;
-import com.englishaoe.lesson.dto.lesson.VariantDTO;
 import com.englishaoe.lesson.exceptions.jwtkeys.JwtExpiredException;
 import com.englishaoe.lesson.utility.JwtUtil;
 import com.englishaoe.lesson.utility.filter.ExamFilter;
