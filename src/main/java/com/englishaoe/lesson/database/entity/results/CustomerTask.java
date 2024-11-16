@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -27,4 +29,6 @@ public class CustomerTask {
     private String completeDate;
     @Column(name = "audio_path")
     private String audioPath;
+    @OneToMany(mappedBy = "customerTaskId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<TaskResult> taskResults;
 }

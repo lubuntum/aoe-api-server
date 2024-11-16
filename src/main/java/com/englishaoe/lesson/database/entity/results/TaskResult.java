@@ -17,14 +17,16 @@ public class TaskResult {
     private Long id;
 
     @Column(name = "user_task_id")
-    private Long userTaskId;
+    private Long customerTaskId;
     @Column(name = "expert_id")
     private Long expertId;
-    @Column(name = "task_result_type_id")
+    @Column(name = "task_result_type_id", insertable = false, updatable = false)
     private Long taskResultTypeId;
     @Column(name = "result")
     private String result;
     @Column(name = "send_date")
     private String sendDate;
-
+    @ManyToOne()
+    @JoinColumn(name = "task_result_type_id")
+    private TaskResultType taskResultType;
 }
