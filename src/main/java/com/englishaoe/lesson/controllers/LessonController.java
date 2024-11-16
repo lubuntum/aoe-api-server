@@ -58,7 +58,7 @@ public class LessonController {
     @PostMapping("/exam")
     public ResponseEntity<ExamDTO> createExam(@RequestBody Exam exam,
                                               @RequestHeader("Authorization") String token){
-        exam.setUserId(Long.valueOf(jwtUtil.extractSubject(token)));
+        exam.setCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
         examService.createExam(exam);
 
     return ResponseEntity.ok(new ExamDTO(exam.getId(), exam.getExamCompleteDate()));

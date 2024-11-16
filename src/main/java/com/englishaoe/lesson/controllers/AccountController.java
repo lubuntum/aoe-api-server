@@ -60,8 +60,15 @@ public class AccountController {
     public ResponseEntity<List<Variant>> getCustomerCompletedVariants(@RequestHeader("Authorization") String token) {
         List<Exam> exams = examService.getExamsByCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
         List<Long> variantsIds =  examFilter.filterExamsByUniqueVariantId(exams);
-        List<Variant> variantsTest = variantService.getVariantsByIds(variantsIds);
+        List<Variant> variants = variantService.getVariantsByIds(variantsIds);
 
-        return ResponseEntity.ok(variantsTest);
+        return ResponseEntity.ok(variants);
+    }
+    @GetMapping("/customer/exams-by-variant")
+    public ResponseEntity<List<Exam>> getExamsCompletedByVariant(@RequestHeader("Authorization") String token,
+                                                                 @RequestParam("variantId") Long variantId){
+        List<Exam> exams = examService.getExamsByCustomerIdAndVariantId(
+                Long.valueOf(jwtUtil.extractSubject(token)), variantId);
+        return ResponseEntity.ok(exams);
     }
 }

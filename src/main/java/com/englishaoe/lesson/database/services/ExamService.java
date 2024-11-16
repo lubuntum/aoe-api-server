@@ -26,6 +26,9 @@ public class ExamService {
         return customerTaskRepository.findByExamId(examId);
     }
     public List<Exam> getExamsByCustomerId(Long customerId){
-        return examRepository.findExamsByUserId(customerId);
+        return examRepository.findExamsByCustomerId(customerId);
+    }
+    public List<Exam> getExamsByCustomerIdAndVariantId(Long customerId, Long variantId){
+        return examRepository.findByCustomerIdAndVariantId(customerId, variantId);
     }
 }
