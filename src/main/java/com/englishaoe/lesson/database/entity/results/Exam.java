@@ -28,8 +28,8 @@ public class Exam {
     @Column(name = "expert_send_date")
     private String expertSendDate;
     @Column(name = "express_total_grade")
-    private String expressTotalGrade;
+    private Integer expressTotalGrade;
     @Column(name = "expert_total_grade")
-    private String expertTotalGrade;
+    private Integer expertTotalGrade;
 
 }
