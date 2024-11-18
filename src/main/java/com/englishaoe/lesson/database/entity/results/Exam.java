@@ -23,7 +23,13 @@ public class Exam {
     private Long customerId;
     @Column(name = "exam_complete_date")
     private String examCompleteDate;
-    @OneToMany(mappedBy = "examId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<CustomerTask> customerTasksByExam;
+    @Column(name = "express_send_date")
+    private String expressSendDate;
+    @Column(name = "expert_send_date")
+    private String expertSendDate;
+    @Column(name = "express_total_grade")
+    private String expressTotalGrade;
+    @Column(name = "expert_total_grade")
+    private String expertTotalGrade;
 
 }
