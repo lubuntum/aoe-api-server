@@ -14,17 +14,10 @@ public class ExamService {
     //exam and customerTask related and connected, use in one ExamService
     @Autowired
     ExamRepository examRepository;
-    @Autowired
-    CustomerTaskRepository customerTaskRepository;
     public Exam createExam(Exam exam){
         return examRepository.save(exam);
     }
-    public void saveCustomerTask(CustomerTask customerTask){
-        customerTaskRepository.save(customerTask);
-    }
-    public List<CustomerTask> getCustomerTaskByExamId(Long examId){
-        return customerTaskRepository.findByExamId(examId);
-    }
+
     public List<Exam> getExamsByCustomerId(Long customerId){
         return examRepository.findExamsByCustomerId(customerId);
     }

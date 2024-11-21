@@ -4,6 +4,7 @@ import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.Exam;
 import com.englishaoe.lesson.database.entity.variants.Task;
 import com.englishaoe.lesson.database.entity.variants.Variant;
+import com.englishaoe.lesson.database.services.CustomerTaskService;
 import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.VariantService;
 import com.englishaoe.lesson.dto.lesson.ExamDTO;
@@ -35,6 +36,8 @@ public class LessonController {
     @Autowired
     ExamService examService;
     @Autowired
+    CustomerTaskService customerTaskService;
+    @Autowired
     JwtUtil jwtUtil;
     @Autowired
     AudioFileUtil audioFileUtil;
@@ -49,10 +52,17 @@ public class LessonController {
         List<TaskDTO> taskList = variantService.getTasksByVariantId(id);
         return ResponseEntity.ok(taskList);
     }
+    /** Get exam result (List of customerTask - 4)*/
     @GetMapping("/result")
     public ResponseEntity<List<CustomerTask>> getExamResults(@RequestParam("examId") Long examId){
-        List<CustomerTask> examTasks = examService.getCustomerTaskByExamId(examId);
+        List<CustomerTask> examTasks = customerTaskService.getCustomerTaskByExamId(examId);
         return ResponseEntity.ok(examTasks);
+    }
+    /** Get customerTask sharable link*/
+    @GetMapping("/customer-task-result")
+    public ResponseEntity<CustomerTask> getCustomerTaskResult(@RequestParam("customerTaskId") Long customerTaskId){
+        CustomerTask customerTask = customerTaskService.getCustomerTaskById(customerTaskId);
+        return ResponseEntity.ok(customerTask);
     }
     /** Create exam and return exam id*/
     @PostMapping("/exam")
@@ -72,7 +82,7 @@ public class LessonController {
         customerTask.setCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
         customerTask.setAudioPath(audioFileUtil.saveAudioFile(file));
         customerTask.setAnswer("{}");
-        examService.saveCustomerTask(customerTask);
+        customerTaskService.saveCustomerTask(customerTask);
         return ResponseEntity.ok("Task Result saved");
     }
 }
