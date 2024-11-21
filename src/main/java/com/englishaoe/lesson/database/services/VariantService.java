@@ -42,5 +42,8 @@ public class VariantService {
     public void saveTask(Task task){
         taskRepository.save(task);
     }
+    public Task getTaskById(Long taskId) {
+        return taskRepository.findById(taskId).orElse(null);
+    }
 
 }

@@ -15,6 +15,7 @@ import com.englishaoe.lesson.utility.AudioFileUtil;
 import com.englishaoe.lesson.utility.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.coyote.Response;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,11 +47,17 @@ public class LessonController {
     public ResponseEntity<List<VariantThemeDTO>> variantsData() throws SQLException {
         return ResponseEntity.ok(variantService.getAllVariantsDTO());
     }
-    /** Get variant tasks by id*/
+    /** Get variant's tasks by id, better call endpoint like getTasksByVariantId*/
     @GetMapping("/variant/{id}/tasks")
     public ResponseEntity<List<TaskDTO>> getVariantById(@PathVariable("id") Long id){
         List<TaskDTO> taskList = variantService.getTasksByVariantId(id);
         return ResponseEntity.ok(taskList);
+    }
+    /** Get specific task by id*/
+    @GetMapping("/task/{id}")
+    public ResponseEntity<Task> getTaskById(@PathVariable("id") Long id) {
+        Task task = variantService.getTaskById(id);
+        return ResponseEntity.ok(task);
     }
     /** Get exam result (List of customerTask - 4)*/
     @GetMapping("/result")
