@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CustomerTaskRepository extends JpaRepository<CustomerTask, Long> {
     List<CustomerTask> findByExamId(Long examId);
+    List<CustomerTask> findByTaskIdAndCustomerIdAndExamIdIsNull(Long taskId, Long customerId);
 }
