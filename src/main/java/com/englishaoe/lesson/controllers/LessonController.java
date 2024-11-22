@@ -65,9 +65,9 @@ public class LessonController {
         List<CustomerTask> examTasks = customerTaskService.getCustomerTaskByExamId(examId);
         return ResponseEntity.ok(examTasks);
     }
-    /** Get customerTask sharable link*/
-    @GetMapping("/customer-task-result")
-    public ResponseEntity<CustomerTask> getCustomerTaskResult(@RequestParam("customerTaskId") Long customerTaskId){
+    /** Get customerTask*/
+    @GetMapping("/customer-task")
+    public ResponseEntity<CustomerTask> getCustomerTaskById(@RequestParam("customerTaskId") Long customerTaskId){
         CustomerTask customerTask = customerTaskService.getCustomerTaskById(customerTaskId);
         return ResponseEntity.ok(customerTask);
     }
