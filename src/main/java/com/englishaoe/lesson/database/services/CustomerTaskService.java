@@ -12,8 +12,8 @@ public class CustomerTaskService {
     @Autowired
     private CustomerTaskRepository customerTaskRepository;
 
-    public void saveCustomerTask(CustomerTask customerTask){
-        customerTaskRepository.save(customerTask);
+    public CustomerTask saveCustomerTask(CustomerTask customerTask){
+        return customerTaskRepository.save(customerTask);
     }
     public List<CustomerTask> getCustomerTaskByExamId(Long examId){
         return customerTaskRepository.findByExamId(examId);

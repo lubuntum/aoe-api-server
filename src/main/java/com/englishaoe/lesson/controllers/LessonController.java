@@ -82,14 +82,14 @@ public class LessonController {
     }
     /** Save all data for task */
     @PostMapping("/user-task")
-    public ResponseEntity<String> saveTaskResult(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<CustomerTask> saveTaskResult(@RequestParam("file") MultipartFile file,
                                                  @RequestPart("customerTask") CustomerTask customerTask,
                                                  @RequestHeader("Authorization") String token) throws JsonProcessingException, SQLException {
         if (file.isEmpty()) throw new RegularException("file is empty", HttpStatus.BAD_REQUEST.value());
         customerTask.setCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
         customerTask.setAudioPath(audioFileUtil.saveAudioFile(file));
         customerTask.setAnswer("{}");
-        customerTaskService.saveCustomerTask(customerTask);
-        return ResponseEntity.ok("Task Result saved");
+        CustomerTask result = customerTaskService.saveCustomerTask(customerTask);
+        return ResponseEntity.ok(result);
     }
 }
