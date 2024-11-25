@@ -78,9 +78,9 @@ public class AccountController {
                 Long.valueOf(jwtUtil.extractSubject(token)), variantId);
         return ResponseEntity.ok(exams);
     }
-    /** get all customerTask completed for the task out of exam (just one Task)*/
-    @GetMapping("/customer/task-by-variant")
-    public ResponseEntity<List<CustomerTask>> getTaskResultCompletedByTask(@RequestHeader("Authorization") String token,
+    /** get all customerTask completed for the task out of exam (just for one Task)*/
+    @GetMapping("/customer/customer-tasks-by-task-id")
+    public ResponseEntity<List<CustomerTask>> getCustomerTasksByTaskId(@RequestHeader("Authorization") String token,
                                                                            @RequestParam("taskId") Long taskId){
         List<CustomerTask> customerTasks = customerTaskService.getCustomerTaskOutOfExam(taskId, Long.valueOf(jwtUtil.extractSubject(token)));
         return ResponseEntity.ok(customerTasks);
