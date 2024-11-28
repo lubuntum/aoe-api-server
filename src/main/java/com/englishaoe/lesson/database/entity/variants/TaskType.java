@@ -21,5 +21,7 @@ public class TaskType {
     Long id;
     @Column(name = "type")
     Integer type;
+    @Column(name = "prompt")
+    String prompt;
 
 }
