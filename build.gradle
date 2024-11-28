@@ -24,9 +24,8 @@ repositories {
 }
 
 dependencies {
-	// SQLITE temp.
-	//implementation 'org.xerial:sqlite-jdbc:3.41.2.1'
-	//implementation 'org.hibernate.orm:hibernate-community-dialects:6.6.1.Final'
+	//asemblyia transcription service
+	implementation group: 'com.assemblyai', name: 'assemblyai-java', version: '4.0.0'
 	//Postgres
 	implementation 'org.postgresql:postgresql:42.6.0'
 	// JAXB dependencies
