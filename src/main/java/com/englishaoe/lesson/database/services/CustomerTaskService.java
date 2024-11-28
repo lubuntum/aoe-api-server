@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerTaskService {
@@ -24,5 +25,13 @@ public class CustomerTaskService {
     }
     public CustomerTask getCustomerTaskById(Long customerTaskId) {
         return customerTaskRepository.findById(customerTaskId).orElse(null);
+    }
+    public void updateAnswerInCustomerTask(Long customerTaskId, String answer) {
+        Optional<CustomerTask> customerTaskOptional = customerTaskRepository.findById(customerTaskId);
+        if (customerTaskOptional.isEmpty())
+            throw new RuntimeException("CustomerTask not found with id: " + customerTaskId);
+        CustomerTask customerTask = customerTaskOptional.get();
+        customerTask.setAnswer(answer);
+        customerTaskRepository.save(customerTask);
     }
 }
