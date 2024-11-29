@@ -15,5 +15,5 @@ public class CustomerTaskDTO {
     //for transcription
     String audioPath;
     String transcriptionServiceName;
-
+    String aiServiceName;
 }
