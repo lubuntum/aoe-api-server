@@ -88,7 +88,7 @@ public class LessonController {
         if (file.isEmpty()) throw new RegularException("file is empty", HttpStatus.BAD_REQUEST.value());
         customerTask.setCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
         customerTask.setAudioPath(audioFileUtil.saveAudioFile(file));
-        customerTask.setAnswer("{}");
+        customerTask.setAnswer(null);
         CustomerTask result = customerTaskService.saveCustomerTask(customerTask);
         return ResponseEntity.ok(result);
     }
