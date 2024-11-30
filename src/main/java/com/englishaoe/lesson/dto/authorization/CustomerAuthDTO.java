@@ -12,11 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CustomerAuthDTO {
     private Long id;
-    private String username;
+    private String email;
     private String password;
-    public CustomerAuthDTO(String username, String password){
-        this.username = username;
-        this.password = password;
-    }
 
 }

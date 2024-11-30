@@ -45,7 +45,7 @@ public class AuthController {
     }
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody CustomerAuthDTO customerAuthDTO){
-        CustomerAuthDTO customerCredential = customerServices.getCustomerCredentialByUsername(customerAuthDTO.getUsername());
+        CustomerAuthDTO customerCredential = customerServices.getCustomerCredentialByEmail(customerAuthDTO.getEmail());
         if (passValidationUtil.validatePassword(customerAuthDTO.getPassword(), customerCredential.getPassword()))
             return ResponseEntity.ok(new LoginResponseDTO(jwtUtil.generateToken(String.valueOf(customerCredential.getId()))));
         /*Remove condition and add search and result from database, now test id = 123*/

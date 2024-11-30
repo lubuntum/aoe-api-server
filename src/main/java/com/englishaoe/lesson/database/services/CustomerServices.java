@@ -21,11 +21,14 @@ public class CustomerServices {
     public CustomerAccountDTO getCustomerAccountDataById(Long id){
         return customerRepository.findCustomerAccountData(id);
     }
-    public CustomerAuthDTO getCustomerCredentialByUsername(String username){
-        return customerRepository.findCustomerCredentialDataByUsername(username);
+    public CustomerAuthDTO getCustomerCredentialByEmail(String email){
+        return customerRepository.findCustomerCredentialByEmail(email);
     }
     public Customer saveCustomer(Customer customer) {
         return customerRepository.save(customer);
+    }
+    public Customer getCustomerByEmail(String email){
+        return customerRepository.findByEmail(email);
     }
     public boolean emailExists(String email) {
         return customerRepository.findByEmail(email) != null;
