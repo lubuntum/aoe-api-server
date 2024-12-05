@@ -24,6 +24,10 @@ repositories {
 }
 
 dependencies {
+	//Gson parsing
+	implementation 'com.google.code.gson:gson:2.7'
+	//for some text comparison methods
+	implementation 'org.apache.commons:commons-text:1.9'
 	//asemblyia transcription service
 	implementation group: 'com.assemblyai', name: 'assemblyai-java', version: '4.0.0'
 	//Postgres
