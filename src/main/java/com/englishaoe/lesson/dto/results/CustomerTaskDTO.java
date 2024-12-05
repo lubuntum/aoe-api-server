@@ -1,5 +1,7 @@
 package com.englishaoe.lesson.dto.results;
 
+import com.englishaoe.lesson.database.entity.variants.Task;
+import com.englishaoe.lesson.dto.lesson.TaskDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,9 +13,12 @@ public class CustomerTaskDTO {
     //for database updating
     Long id;
     //for task content (create dynamic prompt)
-    Long taskId;
+    TaskDTO task;
     //for transcription
     String audioPath;
     String transcriptionServiceName;
     String aiServiceName;
+    String textDistanceMethod;
+    //all text
+    String transcribateText;
 }
