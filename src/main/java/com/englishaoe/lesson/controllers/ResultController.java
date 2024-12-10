@@ -34,7 +34,6 @@ public class ResultController {
     /**
      * Method responsible for get results from AI for single task
      */
-    /*TODO create an object from customerTaskDTO.task.taskContent and use it for checking*/
     @PostMapping("/task-express")
     public ResponseEntity<TaskResult> taskExpress(@RequestBody CustomerTaskDTO customerTaskDTO,
                                                   @RequestHeader("Authorization") String token) throws IllegalAccessException {
@@ -43,11 +42,11 @@ public class ResultController {
         customerTaskDTO.getTask().parseTaskContent();
         //for checking task
         TaskChecker taskChecker = taskCheckerFactory
-                .getTaskCheckerService(TaskTypeConverter.serviceNameFromTaskType(customerTaskDTO.getTask().getTaskType()));
+                .getService(TaskTypeConverter.serviceNameFromTaskType(customerTaskDTO.getTask().getTaskType()));
         //pick needed service for transcription
         APITranscribe apiTranscribe =
-                transcribeFactory.getTranscribeService(customerTaskDTO.getTranscriptionServiceName());
-        //get text by audio file from picked service, TODO need full audio path and check if file even available
+                transcribeFactory.getService(customerTaskDTO.getTranscriptionServiceName());
+        //get text by audio file from picked service,
         String transcribeAnswer = apiTranscribe
                 .transcribe(customerTaskDTO.getAudioPath());
         customerTaskDTO.setTranscribateText(transcribeAnswer);
