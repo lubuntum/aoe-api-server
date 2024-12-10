@@ -1,6 +1,6 @@
-package com.englishaoe.lesson.utility.textdistance.methods;
+package com.englishaoe.lesson.textdistance.methods;
 
-import com.englishaoe.lesson.utility.textdistance.TextDistanceMethod;
+import com.englishaoe.lesson.textdistance.TextDistanceMethod;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.englishaoe.lesson.utility.textdistance;
+package com.englishaoe.lesson.textdistance;
 
 public class DistanceToGradeConverter {
     public static double LOWER_DISTANCE = 0.8;
