@@ -18,6 +18,7 @@ public class CustomerTaskDTO {
     String audioPath;
     String transcriptionServiceName;
     String aiServiceName;
+    String aiModelName;
     String textDistanceMethod;
     //all text
     String transcribateText;
