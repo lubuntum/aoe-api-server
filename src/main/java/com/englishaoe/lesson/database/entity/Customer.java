@@ -1,6 +1,7 @@
 package com.englishaoe.lesson.database.entity;
 
 import com.englishaoe.lesson.database.entity.partnership.Promocode;
+import com.englishaoe.lesson.database.entity.role.Role;
 import com.englishaoe.lesson.database.entity.transactions.Subscription;
 import com.englishaoe.lesson.database.entity.transactions.SubscriptionTransaction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,10 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.print.DocFlavor;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Data
@@ -43,6 +41,14 @@ public class Customer {
     private Integer attemptsExpert;
     @Column(name = "actual_subscription_date")
     private String actualSubscriptionDate;
+
+    @ManyToMany
+    @JoinTable(
+            name = "customer_role",
+            joinColumns = @JoinColumn(name = "customer_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
     private List<SubscriptionTransaction> subscriptionTransactions = new LinkedList<>();

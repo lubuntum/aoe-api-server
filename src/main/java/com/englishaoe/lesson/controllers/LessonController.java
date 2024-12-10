@@ -26,9 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
-//TODO try to get Variant with List<Task> where each Task has TaskType field
-// 1. Can use DTO like VariantExam
-// 2. Can get Variant with Task and then find TaskType for each Task (transaction)
+
 @RestController
 @RequestMapping("/api/lesson")
 public class LessonController {
