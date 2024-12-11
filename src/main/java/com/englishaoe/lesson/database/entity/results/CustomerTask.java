@@ -22,6 +22,10 @@ public class CustomerTask {
     private Long taskId;
     @Column(name = "exam_id")
     private Long examId;
+    @Column(name = "express_check_status_id")
+    private Long expressCheckStatusId;
+    @Column(name = "expert_check_status_id")
+    private Long expertCheckStatusId;
 
     @Column(name = "answer")
     private String answer;
@@ -29,6 +33,12 @@ public class CustomerTask {
     private String completeDate;
     @Column(name = "audio_path")
     private String audioPath;
+    @ManyToOne()
+    @JoinColumn(name = "express_check_status_id", insertable = false, updatable = false)
+    private CheckStatus expressCheckStatus;
+    @ManyToOne()
+    @JoinColumn(name = "expert_check_status_id", insertable = false, updatable = false)
+    private CheckStatus expertCheckStatus;
     @OneToMany(mappedBy = "customerTaskId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<TaskResult> taskResults;
 }
