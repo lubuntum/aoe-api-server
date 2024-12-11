@@ -7,6 +7,7 @@ import com.englishaoe.lesson.taskcheck.PromptBuilder;
 import com.englishaoe.lesson.taskcheck.TaskChecker;
 import com.englishaoe.lesson.utility.TextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +17,11 @@ import java.util.List;
 public class SecondTaskChecker implements TaskChecker, PromptBuilder {
     @Autowired
     private TaskTypeService taskTypeService;
+    @Async
     @Override
-    public TaskResult checkTask(CustomerTaskDTO customerTaskDTO) {
+    public void checkTask(CustomerTaskDTO customerTaskDTO) {
         String prompt = build(customerTaskDTO);
         //use an AI
-        return null;
     }
     public String build(CustomerTaskDTO customerTaskDTO) {
         String prompt = taskTypeService.getPromptByType(customerTaskDTO.getTask().getTaskType());

@@ -1,6 +1,10 @@
 package com.englishaoe.lesson.database.services;
 
+import com.englishaoe.lesson.database.entity.results.CheckStatus;
+import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
+import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
+import com.englishaoe.lesson.database.repository.CheckStatusRepository;
 import com.englishaoe.lesson.database.repository.CustomerTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +16,8 @@ import java.util.Optional;
 public class CustomerTaskService {
     @Autowired
     private CustomerTaskRepository customerTaskRepository;
+    @Autowired
+    private CheckStatusRepository checkStatusRepository;
 
     public CustomerTask saveCustomerTask(CustomerTask customerTask){
         return customerTaskRepository.save(customerTask);
@@ -32,6 +38,17 @@ public class CustomerTaskService {
             throw new RuntimeException("CustomerTask not found with id: " + customerTaskId);
         CustomerTask customerTask = customerTaskOptional.get();
         customerTask.setAnswer(answer);
+        customerTaskRepository.save(customerTask);
+    }
+    public void updateCheckStatus(Long customerTaskId, String statusName, String checkType) {
+        Optional<CustomerTask> customerTaskOptional = customerTaskRepository.findById(customerTaskId);
+        CheckStatus checkStatus = checkStatusRepository.findByStatus(statusName);
+        if (customerTaskOptional.isEmpty())
+            throw new RuntimeException("CustomerTask not found with id: " + customerTaskId);
+        CustomerTask customerTask = customerTaskOptional.get();
+        if (checkType.equals(TaskResultTypeEnum.EXPRESS.getTaskResultType()))
+            customerTask.setExpressCheckStatusId(checkStatus.getId());
+        else customerTask.setExpertCheckStatusId(checkStatus.getId());
         customerTaskRepository.save(customerTask);
     }
 }
