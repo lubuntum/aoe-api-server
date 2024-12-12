@@ -10,6 +10,5 @@ public class TextDistanceFactoryMethod extends ServiceFactory<TextDistanceMethod
     @Autowired
     public TextDistanceFactoryMethod(ApplicationContext applicationContext) {
         super(applicationContext, TextDistanceMethod.class);
-
     }
 }
