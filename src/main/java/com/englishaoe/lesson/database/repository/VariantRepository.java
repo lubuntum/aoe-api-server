@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface VariantRepository extends JpaRepository<Variant, Long> {
-    @Query("SELECT new com.englishaoe.lesson.dto.lesson.VariantThemeDTO(v.id, v.theme) " +
+    @Query("SELECT new com.englishaoe.lesson.dto.lesson.VariantThemeDTO(v.id, v.theme, v.imagePath) " +
             "FROM Variant v")
     List<VariantThemeDTO> findAllVariantsThemesData();
     @Query("SELECT new com.englishaoe.lesson.dto.lesson.TaskDTO(t.id, t.taskContent, tt.type) " +

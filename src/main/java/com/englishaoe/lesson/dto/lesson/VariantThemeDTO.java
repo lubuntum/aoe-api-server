@@ -9,9 +9,14 @@ import lombok.NoArgsConstructor;
  * */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class VariantThemeDTO {
     private Long id;
     private String theme;
+    private String imagePath;
+    public VariantThemeDTO(Long id, String theme, String imagePath) {
+        this.id = id;
+        this.theme = theme;
+        this.imagePath = imagePath;
+    }
 
 }

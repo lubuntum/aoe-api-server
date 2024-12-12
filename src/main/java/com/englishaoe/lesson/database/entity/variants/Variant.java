@@ -22,6 +22,8 @@ public class Variant {
     private Long id;
     @Column(name = "theme")
     private String theme;
+    @Column(name = "image_path")
+    private String imagePath;
 
     @OneToMany(mappedBy = "variantId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Task> variantTasks;
