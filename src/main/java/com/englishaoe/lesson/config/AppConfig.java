@@ -8,4 +8,5 @@ import org.springframework.context.annotation.PropertySource;
 public class AppConfig {
     public static final String SECRET_KEY_PROPERTY = "SECRET_KEY";
     public static final String CLIENT_URL = "CLIENT_URL";
+
 }
