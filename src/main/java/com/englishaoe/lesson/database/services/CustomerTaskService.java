@@ -4,6 +4,7 @@ import com.englishaoe.lesson.database.entity.results.CheckStatus;
 import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
+import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.repository.CheckStatusRepository;
 import com.englishaoe.lesson.database.repository.CustomerTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,10 @@ public class CustomerTaskService {
     private CustomerTaskRepository customerTaskRepository;
     @Autowired
     private CheckStatusRepository checkStatusRepository;
+    /**get all customerTask data by customer id*/
+    public List<Variant> getUniqueVariantsByCustomerId(Long customerId){
+        return customerTaskRepository.findUniqueVariantsByCustomerId(customerId);
+    }
 
     public CustomerTask saveCustomerTask(CustomerTask customerTask){
         return customerTaskRepository.save(customerTask);

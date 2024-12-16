@@ -15,7 +15,6 @@ import com.englishaoe.lesson.dto.account.AccountMapper;
 import com.englishaoe.lesson.dto.account.CustomerHeaderDTO;
 import com.englishaoe.lesson.exceptions.jwtkeys.JwtExpiredException;
 import com.englishaoe.lesson.utility.JwtUtil;
-import com.englishaoe.lesson.utility.filter.ExamFilter;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +37,6 @@ public class AccountController {
     @Autowired
     ExamService examService;
     //TODO add some method or filter for some routes which requier authentification like /customer, /header
-    @Autowired
-    ExamFilter examFilter;
     @GetMapping("/customer")
     public ResponseEntity<CustomerAccountDTO> customerAccountData(@RequestHeader("Authorization") String token){
         CustomerAccountDTO customerAccountDTO = customerServices.getCustomerAccountDataById(Long.valueOf(jwtUtil.extractSubject(token)));
@@ -64,10 +61,8 @@ public class AccountController {
     /** Just get all variants which customer completed (for result panel)*/
     @GetMapping("/customer/completed-variants")
     public ResponseEntity<List<Variant>> getCustomerCompletedVariants(@RequestHeader("Authorization") String token) {
-        List<Exam> exams = examService.getExamsByCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
-        List<Long> variantsIds =  examFilter.filterExamsByUniqueVariantId(exams);
-        List<Variant> variants = variantService.getVariantsByIds(variantsIds);
-
+        //fixed
+        List<Variant> variants = customerTaskService.getUniqueVariantsByCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
         return ResponseEntity.ok(variants);
     }
     /**Get all exams for customer completed by some specific variant*/
