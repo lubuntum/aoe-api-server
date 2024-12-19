@@ -8,4 +8,5 @@ import org.springframework.data.repository.query.Param;
 public interface TaskTypeRepository extends JpaRepository<TaskType, Long> {
     @Query("SELECT t.prompt FROM TaskType t WHERE t.type = :type")
     String findPromptByType(@Param("type") int type);
+    TaskType findByType(Integer type);
 }
