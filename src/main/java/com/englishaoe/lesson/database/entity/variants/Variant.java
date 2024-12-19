@@ -24,6 +24,8 @@ public class Variant {
     private String theme;
     @Column(name = "image_path")
     private String imagePath;
+    @Column(name = "creation_date")
+    private String creationDate;
 
     @OneToMany(mappedBy = "variantId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Task> variantTasks;
