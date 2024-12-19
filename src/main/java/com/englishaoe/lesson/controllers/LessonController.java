@@ -36,8 +36,6 @@ public class LessonController {
     JwtUtil jwtUtil;
     @Value("${audio.folderDir}")
     private String audioFolderPath;
-    @Value("${audio.staticDir}")
-    private String audioFolderStaticPath;
     /** All available variants*/
     @GetMapping("/variants")
     public ResponseEntity<List<VariantThemeDTO>> variantsData() throws SQLException {
@@ -84,7 +82,7 @@ public class LessonController {
         if (file.isEmpty()) throw new RegularException("file is empty", HttpStatus.BAD_REQUEST.value());
         customerTask.setCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
         //customerTask.setAudioPath(audioFileUtil.saveAudioFile(file));
-        customerTask.setAudioPath(FileUtil.saveFileToDir(file, audioFolderPath,  audioFolderStaticPath));
+        customerTask.setAudioPath(FileUtil.saveFileToDir(file, audioFolderPath));
         customerTask.setAnswer(null);
         CustomerTask result = customerTaskService.saveCustomerTask(customerTask);
         return ResponseEntity.ok(result);
