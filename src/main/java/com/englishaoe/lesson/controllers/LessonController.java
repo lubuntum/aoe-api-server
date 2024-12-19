@@ -3,7 +3,6 @@ package com.englishaoe.lesson.controllers;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.Exam;
 import com.englishaoe.lesson.database.entity.variants.Task;
-import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
 import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.VariantService;
@@ -11,20 +10,17 @@ import com.englishaoe.lesson.dto.lesson.ExamDTO;
 import com.englishaoe.lesson.dto.lesson.TaskDTO;
 import com.englishaoe.lesson.dto.lesson.VariantThemeDTO;
 import com.englishaoe.lesson.exceptions.RegularException;
-import com.englishaoe.lesson.utility.AudioFileUtil;
 import com.englishaoe.lesson.utility.JwtUtil;
+import com.englishaoe.lesson.utility.file.FileUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.coyote.Response;
-import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -38,8 +34,10 @@ public class LessonController {
     CustomerTaskService customerTaskService;
     @Autowired
     JwtUtil jwtUtil;
-    @Autowired
-    AudioFileUtil audioFileUtil;
+    @Value("${audio.folderDir}")
+    private String audioFolderPath;
+    @Value("${audio.staticDir}")
+    private String audioFolderStaticPath;
     /** All available variants*/
     @GetMapping("/variants")
     public ResponseEntity<List<VariantThemeDTO>> variantsData() throws SQLException {
@@ -85,7 +83,8 @@ public class LessonController {
                                                  @RequestHeader("Authorization") String token) throws JsonProcessingException, SQLException {
         if (file.isEmpty()) throw new RegularException("file is empty", HttpStatus.BAD_REQUEST.value());
         customerTask.setCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
-        customerTask.setAudioPath(audioFileUtil.saveAudioFile(file));
+        //customerTask.setAudioPath(audioFileUtil.saveAudioFile(file));
+        customerTask.setAudioPath(FileUtil.saveFileToDir(file, audioFolderPath,  audioFolderStaticPath));
         customerTask.setAnswer(null);
         CustomerTask result = customerTaskService.saveCustomerTask(customerTask);
         return ResponseEntity.ok(result);

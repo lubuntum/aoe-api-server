@@ -3,7 +3,6 @@ package com.englishaoe.lesson.controllers;
 import com.englishaoe.lesson.api.transcribe.APITranscribe;
 import com.englishaoe.lesson.api.transcribe.TranscribeFactory;
 import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
-import com.englishaoe.lesson.database.entity.results.TaskResult;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
 import com.englishaoe.lesson.database.services.TaskResultService;
@@ -11,7 +10,6 @@ import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
 import com.englishaoe.lesson.taskcheck.TaskChecker;
 import com.englishaoe.lesson.taskcheck.TaskCheckerFactory;
 import com.englishaoe.lesson.taskcheck.checkers.TaskTypeConverter;
-import com.englishaoe.lesson.utility.AudioFileUtil;
 import com.englishaoe.lesson.utility.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +29,6 @@ public class ResultController {
     private CustomerTaskService customerTaskService;
     @Autowired
     private TaskResultService taskResultService;
-    @Autowired
-    private AudioFileUtil audioFileUtil;
     /**
      * Method responsible for get results from AI for single task
      */
