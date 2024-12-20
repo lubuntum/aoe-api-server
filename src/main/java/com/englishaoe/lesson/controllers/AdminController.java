@@ -38,6 +38,12 @@ public class AdminController {
                     variantName,
                     creationDate)));
     }
+    @DeleteMapping("/delete-variant/{variantId}")
+    public ResponseEntity<String> deleteVariant(@RequestHeader("Authorization") String token,
+                                                @PathVariable("variantId") Long variantId){
+        variantService.deleteVariantById(variantId);
+        return ResponseEntity.status(HttpStatus.OK).body("Variant deleted");
+    }
     @PostMapping("/upload-tasks")
     public ResponseEntity<String> uploadTasks(@RequestHeader("Authorization") String token,
                                               @RequestParam("variantId") Long variantId,

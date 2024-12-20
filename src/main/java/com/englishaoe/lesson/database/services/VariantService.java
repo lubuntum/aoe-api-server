@@ -48,6 +48,9 @@ public class VariantService {
     public Variant saveVariant(Variant variant) {
         return variantRepository.save(variant);
     }
+    public void deleteVariantById(Long variantId) {
+        variantRepository.deleteById(variantId);
+    }
     public void saveTasksByVariant(List<TaskDTO> tasks, Long variantId) {
         for(TaskDTO taskDTO : tasks)  {
             Task task = new Task();
