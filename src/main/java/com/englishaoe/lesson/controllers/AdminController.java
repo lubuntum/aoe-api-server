@@ -47,8 +47,15 @@ public class AdminController {
     @PostMapping("/upload-tasks")
     public ResponseEntity<String> uploadTasks(@RequestHeader("Authorization") String token,
                                               @RequestParam("variantId") Long variantId,
-                                              @RequestParam("tasks") String tasksJSON) {
+                                              @RequestParam("tasks") String tasksJSON,
+                                              @RequestParam("img") MultipartFile secondTaskImage,
+                                              @RequestParam("secondImg") MultipartFile fourthTaskImageFirst,
+                                              @RequestParam("firstImg") MultipartFile fourthTaskImageSecond) {
         jwtUtil.extractSubject(token);//TODO check for admin in future
+        tasksJSON = String.format(tasksJSON,
+                FileUtil.saveFileToDir(secondTaskImage, imageFolderPath),
+                FileUtil.saveFileToDir(fourthTaskImageFirst, imageFolderPath),
+                FileUtil.saveFileToDir(fourthTaskImageSecond, imageFolderPath));
         variantService.saveTasksByVariant(variantService.assembleTasks(tasksJSON), variantId);
         return ResponseEntity.status(HttpStatus.CREATED).body("Tasks created");
     }
