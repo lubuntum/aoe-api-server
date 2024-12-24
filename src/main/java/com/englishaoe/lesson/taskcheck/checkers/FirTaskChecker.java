@@ -37,7 +37,7 @@ public class FirTaskChecker implements TaskChecker {
         double distance = textDistanceMethod
                 .compare(TextUtil.getClearText(customerTaskDTO.getTask().getTaskContentDTO().getTaskText().get(0))
                         ,TextUtil.getClearText(customerTaskDTO.getTranscribateText()));
-        CheckDTO checkDTO = new CheckDTO();
+        CheckDTO checkDTO = CheckDTO.createDefault();
         checkDTO.setGrade(DistanceToGradeConverter.convert(distance));
         taskResultService.saveTaskResult(resultCollect.collect(customerTaskDTO, checkDTO));
         customerTaskService.updateCheckStatus(

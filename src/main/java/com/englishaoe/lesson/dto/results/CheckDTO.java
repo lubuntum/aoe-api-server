@@ -10,9 +10,7 @@ public class CheckDTO {
     private int grade;
     private String checkDate;
     private String comment;
-    public CheckDTO() {
-        this.grade = 0;
-        this.checkDate = DateUtil.getCurrentDate();
-        this.comment = null;
+    public static CheckDTO createDefault() {
+        return new CheckDTO(0, DateUtil.getCurrentDate(), null);
     }
 }
