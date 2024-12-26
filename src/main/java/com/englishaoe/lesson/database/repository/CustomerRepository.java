@@ -10,9 +10,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 //with JPQL
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+    /*
     @Query("SELECT new com.englishaoe.lesson.dto.account.CustomerHeaderDTO(c.username, c.attemptsAI, c.attemptsExpert)" +
             " FROM Customer c WHERE c.id=:id")
     CustomerHeaderDTO findCustomerHeaderData(@Param("id") Long id);
+    */
+    @Query("SELECT c FROM Customer c LEFT JOIN FETCH c.roles WHERE c.id = :id")
+    Customer findCustomerWithRoles(@Param("id") Long id);
     @Query("SELECT new com.englishaoe.lesson.dto.account.CustomerAccountDTO(" +
             "c.username, c.email, c.name, c.secondName, c.registrationDate, c.attemptsAI, c.attemptsExpert, c.actualSubscriptionDate," +
             "p.partnerName) FROM Customer c " +
