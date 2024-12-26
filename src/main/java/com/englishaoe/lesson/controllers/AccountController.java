@@ -36,7 +36,7 @@ public class AccountController {
     CustomerTaskService customerTaskService;
     @Autowired
     ExamService examService;
-    //TODO add some method or filter for some routes which requier authentification like /customer, /header
+    //TODO add checking roles when trying to get acces for admin page
     @GetMapping("/customer")
     public ResponseEntity<CustomerAccountDTO> customerAccountData(@RequestHeader("Authorization") String token){
         CustomerAccountDTO customerAccountDTO = customerServices.getCustomerAccountDataById(Long.valueOf(jwtUtil.extractSubject(token)));
