@@ -26,6 +26,8 @@ public class Variant {
     private String imagePath;
     @Column(name = "creation_date")
     private String creationDate;
+    @Column(name = "is_visible")
+    private Boolean isVisible;
 
     @OneToMany(mappedBy = "variantId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Task> variantTasks;
