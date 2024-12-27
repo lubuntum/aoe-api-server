@@ -8,7 +8,7 @@ import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.VariantService;
 import com.englishaoe.lesson.dto.lesson.ExamDTO;
 import com.englishaoe.lesson.dto.lesson.TaskDTO;
-import com.englishaoe.lesson.dto.lesson.VariantThemeDTO;
+import com.englishaoe.lesson.dto.lesson.variant.VariantDTO;
 import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.utility.JwtUtil;
 import com.englishaoe.lesson.utility.file.FileUtil;
@@ -38,8 +38,8 @@ public class LessonController {
     private String audioFolderPath;
     /** All available variants*/
     @GetMapping("/variants")
-    public ResponseEntity<List<VariantThemeDTO>> variantsData() throws SQLException {
-        return ResponseEntity.ok(variantService.getAllVariantsDTO());
+    public ResponseEntity<List<VariantDTO>> getVisibleVariants() throws SQLException {
+        return ResponseEntity.ok(variantService.getVisibleVariantsDTO());
     }
     /** Get variant's tasks by id, better call endpoint like getTasksByVariantId*/
     @GetMapping("/variant/{id}/tasks")
@@ -82,7 +82,7 @@ public class LessonController {
         if (file.isEmpty()) throw new RegularException("file is empty", HttpStatus.BAD_REQUEST.value());
         customerTask.setCustomerId(Long.valueOf(jwtUtil.extractSubject(token)));
         //customerTask.setAudioPath(audioFileUtil.saveAudioFile(file));
-        customerTask.setAudioPath(FileUtil.saveFileToDir(file, audioFolderPath));
+        customerTask.setAudioPath(FileUtil.saveFileToDir(file, audioFolderPath, false));
         customerTask.setAnswer(null);
         CustomerTask result = customerTaskService.saveCustomerTask(customerTask);
         return ResponseEntity.ok(result);

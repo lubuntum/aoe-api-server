@@ -1,13 +1,13 @@
 package com.englishaoe.lesson.database.services;
 
 import com.englishaoe.lesson.database.entity.variants.Task;
-import com.englishaoe.lesson.database.entity.variants.TaskType;
 import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.repository.TaskRepository;
 import com.englishaoe.lesson.database.repository.TaskTypeRepository;
 import com.englishaoe.lesson.database.repository.VariantRepository;
 import com.englishaoe.lesson.dto.lesson.TaskDTO;
-import com.englishaoe.lesson.dto.lesson.VariantThemeDTO;
+import com.englishaoe.lesson.dto.lesson.variant.VariantDTO;
+import com.englishaoe.lesson.dto.lesson.variant.VariantMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,10 +25,20 @@ public class VariantService {
     private TaskRepository taskRepository;
     @Autowired
     private TaskTypeRepository taskTypeRepository;
+    @Autowired
+    private VariantMapper variantMapper;
 
-    public List<VariantThemeDTO> getAllVariantsDTO(){
+    public List<VariantDTO> getAllVariantsDTO(){
         return variantRepository.findAllVariantsThemesData();
     };
+    public List<VariantDTO> getVisibleVariantsDTO(){
+        return variantRepository.findVisibleVariants();
+    }
+    public VariantDTO updateVariantVisibility(Long variantId, Boolean visibility){
+        Variant variant = variantRepository.findById(variantId).orElseThrow();
+        variant.setIsVisible(visibility);
+        return variantMapper.toDTO(variantRepository.save(variant));
+    }
     @Transactional(readOnly = true)
     public Variant getVariantById(Long id) {
         Variant variant = variantRepository.findById(id)
@@ -66,6 +76,7 @@ public class VariantService {
         variant.setTheme(theme);
         variant.setImagePath(imagePath);
         variant.setCreationDate(creationDate);
+        variant.setIsVisible(false);
         return variant;
     }
     public List<TaskDTO> assembleTasks(String taskJson){
