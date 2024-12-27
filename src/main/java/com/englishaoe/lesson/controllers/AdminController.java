@@ -1,14 +1,12 @@
 package com.englishaoe.lesson.controllers;
 
-import com.englishaoe.lesson.database.entity.variants.Task;
 import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.services.CustomerServices;
 import com.englishaoe.lesson.database.services.VariantService;
-import com.englishaoe.lesson.dto.lesson.TaskDTO;
+import com.englishaoe.lesson.dto.lesson.variant.VariantDTO;
 import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.utility.JwtUtil;
 import com.englishaoe.lesson.utility.file.FileUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -45,9 +43,23 @@ public class AdminController {
 
         return ResponseEntity.ok(variantService.saveVariant(
                 variantService.assembleVariant(
-                    FileUtil.saveFileToDir(variantImg, imageFolderPath),
+                    FileUtil.saveFileToDir(variantImg, imageFolderPath, true),
                     variantName,
                     creationDate)));
+    }
+    @PostMapping("/variant-visibility/{variantId}")
+    public ResponseEntity<VariantDTO> hideVariant(@RequestHeader("Authorization") String token,
+                                              @PathVariable("variantId")Long variantId,
+                                              @RequestParam("visibility") Boolean visibility){
+        if (!customerServices.isCustomerHasAdminRole(Long.valueOf(jwtUtil.extractSubject(token))))
+            throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.ok(variantService.updateVariantVisibility(variantId, visibility));
+    }
+    @GetMapping("/variants")
+    public ResponseEntity<List<VariantDTO>> getAllVariants(@RequestHeader("Authorization") String token){
+        if (!customerServices.isCustomerHasAdminRole(Long.valueOf(jwtUtil.extractSubject(token))))
+            throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.ok(variantService.getAllVariantsDTO());
     }
     @DeleteMapping("/delete-variant/{variantId}")
     public ResponseEntity<String> deleteVariant(@RequestHeader("Authorization") String token,
@@ -67,9 +79,9 @@ public class AdminController {
         if (!customerServices.isCustomerHasAdminRole(Long.valueOf(jwtUtil.extractSubject(token))))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
         tasksJSON = String.format(tasksJSON,
-                FileUtil.saveFileToDir(secondTaskImage, imageFolderPath),
-                FileUtil.saveFileToDir(fourthTaskImageFirst, imageFolderPath),
-                FileUtil.saveFileToDir(fourthTaskImageSecond, imageFolderPath));
+                FileUtil.saveFileToDir(secondTaskImage, imageFolderPath, true),
+                FileUtil.saveFileToDir(fourthTaskImageFirst, imageFolderPath, true),
+                FileUtil.saveFileToDir(fourthTaskImageSecond, imageFolderPath, true));
         variantService.saveTasksByVariant(variantService.assembleTasks(tasksJSON), variantId);
         return ResponseEntity.status(HttpStatus.CREATED).body("Tasks created");
     }
