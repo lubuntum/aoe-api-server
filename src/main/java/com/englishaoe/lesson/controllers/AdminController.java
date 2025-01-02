@@ -1,11 +1,12 @@
 package com.englishaoe.lesson.controllers;
 
+import com.englishaoe.lesson.database.entity.variants.TaskType;
 import com.englishaoe.lesson.database.entity.variants.Variant;
-import com.englishaoe.lesson.database.services.CustomerServices;
+import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.database.services.VariantService;
 import com.englishaoe.lesson.dto.lesson.variant.VariantDTO;
 import com.englishaoe.lesson.exceptions.RegularException;
-import com.englishaoe.lesson.utility.JwtUtil;
+import com.englishaoe.lesson.services.AuthorizationService;
 import com.englishaoe.lesson.utility.file.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,25 +21,42 @@ import java.util.List;
 @RequestMapping("/api/admin")
 public class AdminController {
     @Autowired
-    JwtUtil jwtUtil;
-    @Autowired
     VariantService variantService;
     @Autowired
-    CustomerServices customerServices;
+    TaskTypeService taskTypeService;
+    @Autowired
+    AuthorizationService authorizationService;
     @Value("${image.folderDir}")
     private String imageFolderPath;
     @GetMapping("/validate")
     public boolean validateAdmin(@RequestHeader("Authorization") String token) {
-        return customerServices.isCustomerHasAdminRole(Long.valueOf(jwtUtil.extractSubject(token)));
+        return authorizationService.isCustomerAdmin(token);
     }
+    @GetMapping("/tasks-types")
+    public ResponseEntity<List<TaskType>> getAllTaskType(@RequestHeader("Authorization") String token) {
+        if (!authorizationService.isCustomerAdmin(token))
+            throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.ok(taskTypeService.getAllTaskType());
+    }
+    @PostMapping("/update-prompt")
+    public ResponseEntity<TaskType> updatePrompt(@RequestHeader("Authorization") String token,
+                                                @RequestParam("taskTypeId") Long taskTypeId,
+                                                @RequestParam("prompt") String prompt){
+        if (!authorizationService.isCustomerAdmin(token))
+            throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.ok(taskTypeService.updateTaskType(taskTypeId, prompt));
+    }
+    /**
+     * Save variant and return variant with id
+     * which later can be used for tasks saving
+     * */
     @PostMapping("/upload-variant")
     public ResponseEntity<Variant> uploadVariant(@RequestHeader("Authorization") String token,
                                                  @RequestParam("variantImg") MultipartFile variantImg,
                                                  @RequestParam("variantName") String variantName,
                                                  @RequestParam("creationDate") String creationDate){
 
-        //jwtUtil.extractSubject(token);//TODO check for admin in future
-        if (!customerServices.isCustomerHasAdminRole(Long.valueOf(jwtUtil.extractSubject(token))))
+        if (!authorizationService.isCustomerAdmin(token))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
 
         return ResponseEntity.ok(variantService.saveVariant(
@@ -47,28 +65,35 @@ public class AdminController {
                     variantName,
                     creationDate)));
     }
+    /**
+     * Change variant visibility for users
+     * return updated variant
+     * */
     @PostMapping("/variant-visibility/{variantId}")
     public ResponseEntity<VariantDTO> hideVariant(@RequestHeader("Authorization") String token,
                                               @PathVariable("variantId")Long variantId,
                                               @RequestParam("visibility") Boolean visibility){
-        if (!customerServices.isCustomerHasAdminRole(Long.valueOf(jwtUtil.extractSubject(token))))
+        if (!authorizationService.isCustomerAdmin(token))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
         return ResponseEntity.ok(variantService.updateVariantVisibility(variantId, visibility));
     }
     @GetMapping("/variants")
     public ResponseEntity<List<VariantDTO>> getAllVariants(@RequestHeader("Authorization") String token){
-        if (!customerServices.isCustomerHasAdminRole(Long.valueOf(jwtUtil.extractSubject(token))))
+        if (!authorizationService.isCustomerAdmin(token))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
         return ResponseEntity.ok(variantService.getAllVariantsDTO());
     }
     @DeleteMapping("/delete-variant/{variantId}")
     public ResponseEntity<String> deleteVariant(@RequestHeader("Authorization") String token,
                                                 @PathVariable("variantId") Long variantId){
-        if (!customerServices.isCustomerHasAdminRole(Long.valueOf(jwtUtil.extractSubject(token))))
+        if (!authorizationService.isCustomerAdmin(token))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
         variantService.deleteVariantById(variantId);
         return ResponseEntity.status(HttpStatus.OK).body("Variant deleted");
     }
+    /**
+     * Save all tasks with images by variant id
+     * */
     @PostMapping("/upload-tasks")
     public ResponseEntity<String> uploadTasks(@RequestHeader("Authorization") String token,
                                               @RequestParam("variantId") Long variantId,
@@ -76,7 +101,7 @@ public class AdminController {
                                               @RequestParam("img") MultipartFile secondTaskImage,
                                               @RequestParam("secondImg") MultipartFile fourthTaskImageFirst,
                                               @RequestParam("firstImg") MultipartFile fourthTaskImageSecond) {
-        if (!customerServices.isCustomerHasAdminRole(Long.valueOf(jwtUtil.extractSubject(token))))
+        if (!authorizationService.isCustomerAdmin(token))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
         tasksJSON = String.format(tasksJSON,
                 FileUtil.saveFileToDir(secondTaskImage, imageFolderPath, true),
