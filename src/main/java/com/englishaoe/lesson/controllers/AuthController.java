@@ -18,16 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
-/*TODO (update data storing in key)
-*  0. Create new class for storing info in crypt key
-*   with fields id, roles
-*   roles ["admin", etc..]
-*  1. Try to change jwt authorization and store there this new
-*   class, that approach get ability to check customer roles
-*   without database and etc.
-*   2. Change JwtUtil, login - method, check for all other places where
-*   jwt in use
-* */
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

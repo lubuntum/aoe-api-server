@@ -17,7 +17,6 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 
-//TODO ideally from here request must be send in message queue
 @Service("vsegpt")
 public class VseGPT implements AIService {
     @Value("${VSEGPT_API_KEY}")

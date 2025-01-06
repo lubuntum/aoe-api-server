@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-//TODO taskText, topic 1..4, answer
 @Service("second")
 public class SecondTaskChecker extends BaseAITaskChecker {
     @Autowired
