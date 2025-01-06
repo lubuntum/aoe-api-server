@@ -5,7 +5,10 @@ import lombok.ToString;
 public enum CheckStatusEnum {
     CHECKING("checking"),
     FREE("free"),
-    COMPLETED("completed");
+    COMPLETED("completed"),
+    UNTRANSCRIBED("untranscribed"),
+    TRANSCRIBED("transcribed");
+
 
     private final String status;
     CheckStatusEnum(String status) {
