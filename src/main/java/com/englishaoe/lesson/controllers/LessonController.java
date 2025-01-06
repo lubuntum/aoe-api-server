@@ -56,7 +56,7 @@ public class LessonController {
     /** Get exam result (List of customerTask - 4)*/
     @GetMapping("/result")
     public ResponseEntity<List<CustomerTask>> getExamResults(@RequestParam("examId") Long examId){
-        List<CustomerTask> examTasks = customerTaskService.getCustomerTaskByExamId(examId);
+        List<CustomerTask> examTasks = customerTaskService.getCustomerTasksByExamId(examId);
         return ResponseEntity.ok(examTasks);
     }
     /** Get customerTask*/
