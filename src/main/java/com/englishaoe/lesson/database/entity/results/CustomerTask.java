@@ -33,6 +33,8 @@ public class CustomerTask {
     private String completeDate;
     @Column(name = "audio_path")
     private String audioPath;
+    @Column(name = "temp_checking_data")
+    private String tempCheckingData;
     @ManyToOne()
     @JoinColumn(name = "express_check_status_id", insertable = false, updatable = false)
     private CheckStatus expressCheckStatus;
