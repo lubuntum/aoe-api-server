@@ -3,17 +3,23 @@ package com.englishaoe.lesson.controllers;
 import com.englishaoe.lesson.api.transcribe.APITranscribe;
 import com.englishaoe.lesson.api.transcribe.TranscribeFactory;
 import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
+import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
 import com.englishaoe.lesson.database.services.TaskResultService;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
+import com.englishaoe.lesson.services.CustomerTaskDTOAssembleService;
+import com.englishaoe.lesson.services.PrepareExamCustomerTaskService;
 import com.englishaoe.lesson.taskcheck.TaskChecker;
 import com.englishaoe.lesson.taskcheck.TaskCheckerFactory;
 import com.englishaoe.lesson.taskcheck.checkers.TaskTypeConverter;
 import com.englishaoe.lesson.utility.JwtUtil;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/result")
@@ -23,6 +29,8 @@ public class ResultController {
     private TranscribeFactory transcribeFactory;
     @Autowired
     private TaskCheckerFactory taskCheckerFactory;
+    @Autowired
+    PrepareExamCustomerTaskService prepareExamCustomerTaskService;
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
@@ -58,5 +66,31 @@ public class ResultController {
         taskChecker.checkTask(customerTaskDTO);
 
         return ResponseEntity.ok(CheckStatusEnum.CHECKING.getStatus());
+    }
+    @PostMapping("/task-express-queue")
+    public ResponseEntity<String> taskExpressQueue(@RequestBody CustomerTaskDTO customerTaskDTO,
+                                                   @RequestHeader("Authorization") String token){
+        jwtUtil.extractSubject(token);
+        customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), new Gson().toJson(customerTaskDTO));
+        customerTaskService.updateCheckStatus(
+                customerTaskDTO.getId(),
+                CheckStatusEnum.UNTRANSCRIBED.getStatus(),
+                TaskResultTypeEnum.EXPRESS.getTaskResultType());
+
+        //Change customerTask status to untranscribate
+        //Serialize all data to tempChekingData for next checking and update customerTask
+        //return response to user
+        return ResponseEntity.ok(CheckStatusEnum.UNTRANSCRIBED.getStatus());
+    }
+    /*TODO
+    *  1 remove temp data after task is checked
+    *  2 if customerTask relate to exam, add total grade for task to Exam result, like sum*/
+    @PostMapping("/exam-tasks-express-queue")
+    public ResponseEntity<String> examTaskExpressQueue(@RequestParam Long examId,
+                                                       @RequestHeader("Authorization") String token){
+        jwtUtil.extractSubject(token);
+        prepareExamCustomerTaskService.prepareCustomerTasks(examId);
+        //get 4 tasks by exam Id
+        return ResponseEntity.ok("Exam set to checking");
     }
 }
