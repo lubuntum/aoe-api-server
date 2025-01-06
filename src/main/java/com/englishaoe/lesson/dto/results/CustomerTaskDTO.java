@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class CustomerTaskDTO {
     //for database updating
     Long id;
+    Long examId;
     //for task content (create dynamic prompt)
     TaskDTO task;
     //for transcription
