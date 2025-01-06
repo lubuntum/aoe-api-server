@@ -1,7 +1,6 @@
 package com.englishaoe.lesson.database.services;
 
 import com.englishaoe.lesson.database.entity.results.CheckStatus;
-import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.entity.variants.Variant;
@@ -27,7 +26,7 @@ public class CustomerTaskService {
     public CustomerTask saveCustomerTask(CustomerTask customerTask){
         return customerTaskRepository.save(customerTask);
     }
-    public List<CustomerTask> getCustomerTaskByExamId(Long examId){
+    public List<CustomerTask> getCustomerTasksByExamId(Long examId){
         return customerTaskRepository.findByExamId(examId);
     }
     /** Get all customerTask completed by user out of exam, just solid task*/
@@ -56,4 +55,19 @@ public class CustomerTaskService {
         else customerTask.setExpertCheckStatusId(checkStatus.getId());
         customerTaskRepository.save(customerTask);
     }
+    public void updateTempCheckingData(Long customerTaskId, String checkingData){
+        Optional<CustomerTask> customerTaskOptional = customerTaskRepository.findById(customerTaskId);
+        if (customerTaskOptional.isEmpty())
+            throw new RuntimeException("CustomerTask not found with id: " + customerTaskId);
+        CustomerTask customerTask = customerTaskOptional.get();
+        customerTask.setTempCheckingData(checkingData);
+        customerTaskRepository.save(customerTask);
+    }
+    public CustomerTask getCustomerTaskByStatus(String status){
+        return customerTaskRepository.findCustomerTaskByStatus(status);
+    }
+    public CustomerTask getOldestCustomerTaskByStatus(String status){
+        return customerTaskRepository.findOldestCustomerTaskWithStatus(status);
+    }
+
 }

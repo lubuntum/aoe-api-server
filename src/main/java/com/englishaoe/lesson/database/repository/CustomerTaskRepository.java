@@ -18,4 +18,8 @@ public interface CustomerTaskRepository extends JpaRepository<CustomerTask, Long
             "join Variant v on t.variantId = v.id " +
             "where ct.customerId = :customerId")
     List<Variant> findUniqueVariantsByCustomerId(@Param("customerId") Long customerId);
+    @Query("select ct from CustomerTask ct where ct.expressCheckStatus.status = :status")
+    CustomerTask findCustomerTaskByStatus(@Param("status") String status);
+    @Query("select ct from CustomerTask ct where ct.expressCheckStatus.status = :status order by ct.completeDate ASC limit 1")
+    CustomerTask findOldestCustomerTaskWithStatus(@Param("status") String status);
 }
