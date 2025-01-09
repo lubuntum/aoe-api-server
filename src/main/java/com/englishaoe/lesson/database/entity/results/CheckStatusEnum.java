@@ -6,8 +6,10 @@ public enum CheckStatusEnum {
     CHECKING("checking"),
     FREE("free"),
     COMPLETED("completed"),
+    INCOMPLETE("incomplete"),
     UNTRANSCRIBED("untranscribed"),
-    TRANSCRIBED("transcribed");
+    TRANSCRIBED("transcribed"),
+    INSUFFICIENT("insufficient");
 
 
     private final String status;
