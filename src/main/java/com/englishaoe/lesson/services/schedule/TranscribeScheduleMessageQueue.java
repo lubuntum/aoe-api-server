@@ -43,6 +43,10 @@ public class TranscribeScheduleMessageQueue {
                     new Gson().fromJson(customerTask.getTempCheckingData(), CustomerTaskDTO.class);
             APITranscribe apiTranscribe = transcribeFactory.getService(customerTaskDTO.getTranscriptionServiceName());
             String transcribeAnswer = apiTranscribe.transcribe(customerTaskDTO.getAudioPath());
+            if (transcribeAnswer == null || transcribeAnswer.isBlank()) {
+                customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.INSUFFICIENT.getStatus(), TaskResultTypeEnum.EXPERT.getTaskResultType());
+                return;
+            }
             customerTaskService.updateAnswerInCustomerTask(customerTaskDTO.getId(), transcribeAnswer);
             customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.TRANSCRIBED.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
         } catch (Exception e) {
