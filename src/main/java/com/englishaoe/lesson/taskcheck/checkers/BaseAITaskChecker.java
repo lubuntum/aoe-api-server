@@ -35,18 +35,36 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
     @Async
     @Override
     public void checkTask(CustomerTaskDTO customerTaskDTO) {
-        Gson gson = new Gson();
-        String prompt = build(customerTaskDTO);
-        AIService aiService = aiServicesFactory.getService(customerTaskDTO.getAiServiceName());
-        String jsonResponseContent = JsonUtil.extractJson(
-                aiService.sendRequest(customerTaskDTO, prompt).replaceAll("\n",""));
-        //if jsonResponseContent is null then do smging about it
-        CheckDTO checkDTO = gson.fromJson(jsonResponseContent, CheckDTO.class);
-        taskResultService.saveTaskResult(resultCollect.collect(customerTaskDTO, checkDTO));
-        customerTaskService.updateCheckStatus(
-                customerTaskDTO.getId(),
-                CheckStatusEnum.COMPLETED.getStatus(),
-                TaskResultTypeEnum.EXPRESS.getTaskResultType());
+        try{
+            Gson gson = new Gson();
+            String prompt = build(customerTaskDTO);
+            AIService aiService = aiServicesFactory.getService(customerTaskDTO.getAiServiceName());
+            String jsonResponseContent = JsonUtil.extractJson(
+                    aiService.sendRequest(customerTaskDTO, prompt).replaceAll("\n",""));
+            validateResponse(jsonResponseContent);
+            CheckDTO checkDTO = gson.fromJson(jsonResponseContent, CheckDTO.class);
+            validateCheckDTO(checkDTO);
+            taskResultService.saveTaskResult(resultCollect.collect(customerTaskDTO, checkDTO));
+            //update status
+            customerTaskService.updateCheckStatus(
+                    customerTaskDTO.getId(),
+                    CheckStatusEnum.COMPLETED.getStatus(),
+                    TaskResultTypeEnum.EXPRESS.getTaskResultType());
+            customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
+        } catch (Exception e) {
+            //TODO save error massage
+            customerTaskService.updateCheckStatus(
+                    customerTaskDTO.getId(),
+                    CheckStatusEnum.INCOMPLETE.getStatus(),
+                    TaskResultTypeEnum.EXPRESS.getTaskResultType());
+        }
+    }
+    private void validateResponse(String response) {
+        if (response == null || response.isBlank())
+            throw new IllegalArgumentException("Response is null or blank");
+    }
+    private void validateCheckDTO(CheckDTO checkDTO) {
+        if (checkDTO == null) throw new NullPointerException();
     }
 
     @Override
