@@ -1,7 +1,9 @@
 package com.englishaoe.lesson.controllers;
 
+import com.englishaoe.lesson.database.entity.Customer;
 import com.englishaoe.lesson.database.entity.variants.TaskType;
 import com.englishaoe.lesson.database.entity.variants.Variant;
+import com.englishaoe.lesson.database.services.CustomerServices;
 import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.database.services.VariantService;
 import com.englishaoe.lesson.dto.lesson.variant.VariantDTO;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -26,6 +29,8 @@ public class AdminController {
     TaskTypeService taskTypeService;
     @Autowired
     AuthorizationService authorizationService;
+    @Autowired
+    CustomerServices customerServices;
     @Value("${image.folderDir}")
     private String imageFolderPath;
     @GetMapping("/validate")
@@ -37,6 +42,21 @@ public class AdminController {
         if (!authorizationService.isCustomerAdmin(token))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
         return ResponseEntity.ok(taskTypeService.getAllTaskType());
+    }
+    @GetMapping("/customer-id-by-email")
+    public ResponseEntity<Long> getCustomerIdByEmail(@RequestHeader("Authorization") String token,
+                                                     @RequestParam("email") String email){
+        if (!authorizationService.isCustomerAdmin(token))
+            throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.ok(customerServices.getCustomerByEmail(email).getId());
+    }
+    @PostMapping("/add-balance-to-customer")
+    public ResponseEntity<Boolean> addBalanceToCustomer(@RequestHeader("Authorization") String token,
+                                                        @RequestParam("customerId") Long customerId,
+                                                        @RequestParam("amount") BigDecimal amount){
+        if (!authorizationService.isCustomerAdmin(token))
+            throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.ok(customerServices.addBalanceToCustomerById(customerId, amount));
     }
     @PostMapping("/update-prompt")
     public ResponseEntity<TaskType> updatePrompt(@RequestHeader("Authorization") String token,
