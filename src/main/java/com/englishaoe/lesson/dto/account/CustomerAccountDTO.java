@@ -3,6 +3,8 @@ package com.englishaoe.lesson.dto.account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 public class CustomerAccountDTO {
@@ -11,8 +13,7 @@ public class CustomerAccountDTO {
     private String name;
     private String secondName;
     private String registrationDate;
-    private Integer attemptsAI;
-    private Integer attemptsExpert;
+    private BigDecimal currentBalance;
     //Actual date of purchasing subscription
     private String actualSubscriptionDate;
     //Name for organization or individual who invited customer

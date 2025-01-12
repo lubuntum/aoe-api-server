@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.print.DocFlavor;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
@@ -35,10 +36,8 @@ public class Customer {
     private String secondName;
     @Column(name = "registration_date")
     private String registrationDate;
-    @Column(name = "attempts_ai")
-    private Integer attemptsAI;
-    @Column(name = "attempts_expert")
-    private Integer attemptsExpert;
+    @Column(name = "current_balance", precision = 10, scale = 2)
+    private BigDecimal currentBalance;
     @Column(name = "actual_subscription_date")
     private String actualSubscriptionDate;
 

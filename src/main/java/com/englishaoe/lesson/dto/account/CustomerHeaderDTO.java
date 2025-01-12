@@ -4,19 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class CustomerHeaderDTO {
     private String username;
-    private Integer attemptsAI;
-    private Integer attemptsExpert;
+    private BigDecimal currentBalance;
     private List<String> roles;
-    public CustomerHeaderDTO(String username, Integer attemptsAI, Integer attemptsExpert, List<String> roles){
+    public CustomerHeaderDTO(String username, BigDecimal currentBalance, List<String> roles){
         this.username = username;
-        this.attemptsAI = attemptsAI;
-        this.attemptsExpert = attemptsExpert;
+        this.currentBalance = currentBalance;
         this.roles = roles;
     }
 }
