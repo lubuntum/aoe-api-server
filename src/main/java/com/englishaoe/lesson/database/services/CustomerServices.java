@@ -9,7 +9,9 @@ import com.englishaoe.lesson.dto.authorization.CustomerAuthDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,8 +29,7 @@ public class CustomerServices {
                 .stream()
                 .map(Role::getName)
                 .toList();
-        return new CustomerHeaderDTO(customer.getUsername(), customer.getAttemptsAI(), customer.getAttemptsExpert(), roleNames);
-        //return customerRepository.findCustomerHeaderData(id);
+        return new CustomerHeaderDTO(customer.getUsername(), customer.getCurrentBalance(), roleNames);
     }
     public boolean isCustomerHasAdminRole(Long id) {
         Customer customer = customerRepository.findById(id).orElse(null);
@@ -41,6 +42,16 @@ public class CustomerServices {
     }
     public CustomerAuthDTO getCustomerCredentialByEmail(String email){
         return customerRepository.findCustomerCredentialByEmail(email);
+    }
+    public Boolean addBalanceToCustomerById(Long id, BigDecimal amount){
+        Optional<Customer> customerOptional = customerRepository.findById(id);
+        if (customerOptional.isEmpty()) return false;
+        Customer customer = customerOptional.get();
+        BigDecimal currentBalance =
+                Optional.ofNullable(customer.getCurrentBalance()).orElse(BigDecimal.ZERO);
+        customer.setCurrentBalance(currentBalance.add(amount));
+        customerRepository.save(customer);
+        return true;
     }
     public Customer saveCustomer(Customer customer) {
         return customerRepository.save(customer);
