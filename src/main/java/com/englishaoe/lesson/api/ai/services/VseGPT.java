@@ -50,8 +50,8 @@ public class VseGPT implements AIService {
 
         } catch (Exception e) {
             System.err.print(e.getMessage());
+            return null;
         }
-        return null;
     }
 }
 /*
