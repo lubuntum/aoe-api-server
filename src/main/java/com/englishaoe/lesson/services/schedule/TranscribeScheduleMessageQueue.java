@@ -6,7 +6,9 @@ import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
+import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
+import com.englishaoe.lesson.services.transactions.TasksCheckingTransactionServices;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +22,16 @@ public class TranscribeScheduleMessageQueue {
     private final Semaphore semaphore = new Semaphore(1);
     private final CustomerTaskService customerTaskService;
     private final TranscribeFactory transcribeFactory;
-    public TranscribeScheduleMessageQueue(CustomerTaskService customerTaskService, TranscribeFactory transcribeFactory){
+    private final TasksCheckingTransactionServices tasksCheckingTransactionServices;
+    private final TaskTypeService taskTypeService;
+    public TranscribeScheduleMessageQueue(CustomerTaskService customerTaskService,
+                                          TranscribeFactory transcribeFactory,
+                                          TasksCheckingTransactionServices tasksCheckingTransactionServices,
+                                          TaskTypeService taskTypeService){
         this.customerTaskService = customerTaskService;
         this.transcribeFactory = transcribeFactory;
+        this.tasksCheckingTransactionServices = tasksCheckingTransactionServices;
+        this.taskTypeService = taskTypeService;
         startTask();
     }
     public void startTask(){
@@ -36,21 +45,24 @@ public class TranscribeScheduleMessageQueue {
         if (!semaphore.tryAcquire()) {
             System.out.print("Message skipped due to concurrency limit");
         }
+        CustomerTask customerTask = customerTaskService.getOldestCustomerTaskByStatus(CheckStatusEnum.UNTRANSCRIBED.getStatus());
+        if(customerTask == null) return;
+        CustomerTaskDTO customerTaskDTO =
+                new Gson().fromJson(customerTask.getTempCheckingData(), CustomerTaskDTO.class);
         try{
-            CustomerTask customerTask = customerTaskService.getOldestCustomerTaskByStatus(CheckStatusEnum.UNTRANSCRIBED.getStatus());
-            if(customerTask == null) return;
-            CustomerTaskDTO customerTaskDTO =
-                    new Gson().fromJson(customerTask.getTempCheckingData(), CustomerTaskDTO.class);
             APITranscribe apiTranscribe = transcribeFactory.getService(customerTaskDTO.getTranscriptionServiceName());
             String transcribeAnswer = apiTranscribe.transcribe(customerTaskDTO.getAudioPath());
-            if (transcribeAnswer == null || transcribeAnswer.isBlank()) {
-                customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.INSUFFICIENT.getStatus(), TaskResultTypeEnum.EXPERT.getTaskResultType());
+            if (transcribeAnswer == null || transcribeAnswer.trim().isBlank() || transcribeAnswer.length() < 20) {
+                customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.INSUFFICIENT.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
                 return;
             }
             customerTaskService.updateAnswerInCustomerTask(customerTaskDTO.getId(), transcribeAnswer);
             customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.TRANSCRIBED.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
         } catch (Exception e) {
             System.err.print(e.getMessage());
+            tasksCheckingTransactionServices.refund(
+                    customerTaskDTO.getCustomerId(), taskTypeService.getPriceByTaskType(customerTaskDTO.getTask().getTaskType()));
+            customerTaskService.updateCheckStatus(customerTaskDTO.getId(), null, TaskResultTypeEnum.EXPRESS.getTaskResultType());
         } finally {
             semaphore.release();
         }

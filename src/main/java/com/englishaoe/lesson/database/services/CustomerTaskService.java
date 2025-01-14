@@ -51,8 +51,8 @@ public class CustomerTaskService {
             throw new RuntimeException("CustomerTask not found with id: " + customerTaskId);
         CustomerTask customerTask = customerTaskOptional.get();
         if (checkType.equals(TaskResultTypeEnum.EXPRESS.getTaskResultType()))
-            customerTask.setExpressCheckStatusId(checkStatus.getId());
-        else customerTask.setExpertCheckStatusId(checkStatus.getId());
+            customerTask.setExpressCheckStatusId(checkStatus == null ? null : checkStatus.getId());
+        else customerTask.setExpertCheckStatusId(checkStatus == null ? null : checkStatus.getId());
         customerTaskRepository.save(customerTask);
     }
     public void updateTempCheckingData(Long customerTaskId, String checkingData){
