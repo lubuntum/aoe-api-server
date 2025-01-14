@@ -8,6 +8,9 @@ import com.englishaoe.lesson.dto.account.CustomerHeaderDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.math.BigDecimal;
+
 //with JPQL
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     /*
@@ -30,4 +33,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             "FROM Customer c WHERE c.email = :email")
     CustomerAuthDTO findCustomerCredentialByEmail(@Param("email") String email);
     Customer findByEmail(String email);
+    @Query("SELECT c.id from Customer c WHERE c.email = :email")
+    Long findCustomerIdByEmail(String email);
+    @Query("SELECT c.currentBalance from Customer c WHERE c.id = :customerId")
+    BigDecimal findCurrentBalanceById(Long customerId);
 }

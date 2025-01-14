@@ -6,6 +6,7 @@ import com.englishaoe.lesson.exceptions.RegularException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,5 +27,17 @@ public class TaskTypeService {
         TaskType taskType = taskTypeOptional.get();
         taskType.setPrompt(prompt);
         return taskTypeRepository.save(taskType);
+    }
+    public TaskType getTaskTypeByType(Integer type){
+        return taskTypeRepository.findByType(type);
+    }
+    public BigDecimal getPriceByTaskType(Integer type) {
+        return taskTypeRepository.findPriceByType(type);
+    }
+    public Long getTaskTypeCount() {
+        return taskTypeRepository.count();
+    }
+    public BigDecimal getTotalPrice() {
+        return taskTypeRepository.findTotalPrice();
     }
 }

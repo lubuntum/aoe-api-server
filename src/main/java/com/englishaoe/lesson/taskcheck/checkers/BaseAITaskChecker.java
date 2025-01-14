@@ -9,6 +9,7 @@ import com.englishaoe.lesson.database.services.TaskResultService;
 import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.dto.results.CheckDTO;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
+import com.englishaoe.lesson.services.transactions.TasksCheckingTransactionServices;
 import com.englishaoe.lesson.taskcheck.PromptBuilder;
 import com.englishaoe.lesson.taskcheck.ResultCollect;
 import com.englishaoe.lesson.taskcheck.TaskChecker;
@@ -31,6 +32,8 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
     private TaskResultService taskResultService;
     @Autowired
     private CustomerTaskService customerTaskService;
+    @Autowired
+    private TasksCheckingTransactionServices tasksCheckingTransactionServices;
     @Transactional
     @Async
     @Override
@@ -45,6 +48,7 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
             CheckDTO checkDTO = gson.fromJson(jsonResponseContent, CheckDTO.class);
             validateCheckDTO(checkDTO);
             taskResultService.saveTaskResult(resultCollect.collect(customerTaskDTO, checkDTO));
+            //TODO if customerTask has examId, then add grade to express_total_grade
             //update status
             customerTaskService.updateCheckStatus(
                     customerTaskDTO.getId(),
@@ -53,6 +57,9 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
             customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
         } catch (Exception e) {
             //TODO save error massage
+            tasksCheckingTransactionServices.refund(
+                    customerTaskDTO.getCustomerId(),
+                    taskTypeService.getPriceByTaskType(customerTaskDTO.getTask().getTaskType()));
             customerTaskService.updateCheckStatus(
                     customerTaskDTO.getId(),
                     CheckStatusEnum.INCOMPLETE.getStatus(),

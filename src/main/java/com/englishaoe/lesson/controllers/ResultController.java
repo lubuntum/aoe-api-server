@@ -7,15 +7,18 @@ import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
 import com.englishaoe.lesson.database.services.TaskResultService;
+import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
 import com.englishaoe.lesson.services.CustomerTaskDTOAssembleService;
 import com.englishaoe.lesson.services.PrepareExamCustomerTaskService;
+import com.englishaoe.lesson.services.transactions.TasksCheckingTransactionServices;
 import com.englishaoe.lesson.taskcheck.TaskChecker;
 import com.englishaoe.lesson.taskcheck.TaskCheckerFactory;
 import com.englishaoe.lesson.taskcheck.checkers.TaskTypeConverter;
 import com.englishaoe.lesson.utility.JwtUtil;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +40,10 @@ public class ResultController {
     private CustomerTaskService customerTaskService;
     @Autowired
     private TaskResultService taskResultService;
+    @Autowired
+    private TaskTypeService taskTypeService;
+    @Autowired
+    private TasksCheckingTransactionServices tasksCheckingTransactionServices;
     /**
      * Method responsible for get results from AI for single task
      */
@@ -70,7 +77,12 @@ public class ResultController {
     @PostMapping("/task-express-queue")
     public ResponseEntity<String> taskExpressQueue(@RequestBody CustomerTaskDTO customerTaskDTO,
                                                    @RequestHeader("Authorization") String token){
-        jwtUtil.extractSubject(token);
+
+        if (!tasksCheckingTransactionServices.payForChecking(
+                Long.valueOf(jwtUtil.extractSubject(token)),
+                taskTypeService.getPriceByTaskType(customerTaskDTO.getTask().getTaskType())))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Insufficient funds");
+        //check if there is enought balance to user for current task type
         customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), new Gson().toJson(customerTaskDTO));
         customerTaskService.updateCheckStatus(
                 customerTaskDTO.getId(),
@@ -89,6 +101,11 @@ public class ResultController {
     public ResponseEntity<String> examTaskExpressQueue(@RequestParam Long examId,
                                                        @RequestHeader("Authorization") String token){
         jwtUtil.extractSubject(token);
+        if (!tasksCheckingTransactionServices.payForChecking(
+                Long.valueOf(jwtUtil.extractSubject(token)),
+                taskTypeService.getTotalPrice()))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Insufficient funds");
+
         prepareExamCustomerTaskService.prepareCustomerTasks(examId);
         //get 4 tasks by exam Id
         return ResponseEntity.ok("Exam set to checking");

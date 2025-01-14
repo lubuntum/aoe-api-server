@@ -14,6 +14,7 @@ public class CustomerTaskDTO {
     Long id;
     Long examId;
     //for task content (create dynamic prompt)
+    Long customerId;
     TaskDTO task;
     //for transcription
     String audioPath;

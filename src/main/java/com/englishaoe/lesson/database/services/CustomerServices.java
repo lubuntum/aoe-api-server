@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CustomerServices {
@@ -53,13 +52,31 @@ public class CustomerServices {
         customerRepository.save(customer);
         return true;
     }
+    public Boolean subBalanceToCustomerById(Long id, BigDecimal price) {
+        Optional<Customer> customerOptional = customerRepository.findById(id);
+        if (customerOptional.isEmpty()) return false;
+        Customer customer = customerOptional.get();
+        BigDecimal currentBalance =
+                Optional.ofNullable(customer.getCurrentBalance()).orElse(BigDecimal.ZERO);
+        if (currentBalance.subtract(price).compareTo(BigDecimal.ZERO) < 0)
+            return false;
+        customer.setCurrentBalance(currentBalance.subtract(price));
+        customerRepository.save(customer);
+        return true;
+    }
     public Customer saveCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
     public Customer getCustomerByEmail(String email){
         return customerRepository.findByEmail(email);
     }
+    public Long getCustomerIdByEmail(String email) {
+        return customerRepository.findCustomerIdByEmail(email);
+    }
     public boolean emailExists(String email) {
         return customerRepository.findByEmail(email) != null;
+    }
+    public BigDecimal getCurrentBalanceByCustomerId(Long id){//del
+        return customerRepository.findCurrentBalanceById(id);
     }
 }

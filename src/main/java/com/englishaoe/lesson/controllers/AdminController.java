@@ -1,6 +1,5 @@
 package com.englishaoe.lesson.controllers;
 
-import com.englishaoe.lesson.database.entity.Customer;
 import com.englishaoe.lesson.database.entity.variants.TaskType;
 import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.services.CustomerServices;
@@ -48,7 +47,9 @@ public class AdminController {
                                                      @RequestParam("email") String email){
         if (!authorizationService.isCustomerAdmin(token))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
-        return ResponseEntity.ok(customerServices.getCustomerByEmail(email).getId());
+        Long customerId = customerServices.getCustomerIdByEmail(email);
+        if (customerId == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(customerId);
     }
     @PostMapping("/add-balance-to-customer")
     public ResponseEntity<Boolean> addBalanceToCustomer(@RequestHeader("Authorization") String token,

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -23,5 +24,7 @@ public class TaskType {
     Integer type;
     @Column(name = "prompt")
     String prompt;
+    @Column(name = "price", precision = 10, scale = 2)
+    BigDecimal price;
 
 }

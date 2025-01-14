@@ -28,6 +28,7 @@ public class CustomerTaskDTOAssembleService {
         CustomerTaskDTO customerTaskDTO = new CustomerTaskDTO(
                 cT.getId(),
                 cT.getExamId(),
+                cT.getCustomerId(),
                 taskDTO,
                 cT.getAudioPath(),
                 TRANSCRIBE_SERVICE_DEFAULT,
