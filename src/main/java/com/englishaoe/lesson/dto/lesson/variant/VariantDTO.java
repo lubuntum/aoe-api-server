@@ -18,6 +18,7 @@ public class VariantDTO {
         this.id = id;
         this.theme = theme;
         this.imagePath = imagePath;
+        this.creationDate = creationDate;
         this.isVisible = isVisible;
     }
 
