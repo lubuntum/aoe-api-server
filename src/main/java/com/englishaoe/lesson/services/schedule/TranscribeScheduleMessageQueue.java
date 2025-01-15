@@ -49,14 +49,27 @@ public class TranscribeScheduleMessageQueue {
         if(customerTask == null) return;
         CustomerTaskDTO customerTaskDTO =
                 new Gson().fromJson(customerTask.getTempCheckingData(), CustomerTaskDTO.class);
+        //TODO Now not working, do it for answer, and if condition working then not use AI just go next status
+        if (customerTaskDTO.getTranscribateText() != null && !customerTaskDTO.getTranscribateText().trim().isBlank() && customerTaskDTO.getTranscribateText().length() >= 20) {
+            customerTaskService.updateCheckStatus(
+                    customerTask.getId(),
+                    CheckStatusEnum.TRANSCRIBED.getStatus(),
+                    TaskResultTypeEnum.EXPRESS.getTaskResultType());
+            return;
+        }
         try{
             APITranscribe apiTranscribe = transcribeFactory.getService(customerTaskDTO.getTranscriptionServiceName());
+            Gson gson = new Gson();
             String transcribeAnswer = apiTranscribe.transcribe(customerTaskDTO.getAudioPath());
             if (transcribeAnswer == null || transcribeAnswer.trim().isBlank() || transcribeAnswer.length() < 20) {
                 customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.INSUFFICIENT.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
                 return;
             }
             customerTaskService.updateAnswerInCustomerTask(customerTaskDTO.getId(), transcribeAnswer);
+
+            customerTaskDTO.setTranscribateText(transcribeAnswer);
+            customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), gson.toJson(customerTaskDTO));
+
             customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.TRANSCRIBED.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
         } catch (Exception e) {
             System.err.print(e.getMessage());
