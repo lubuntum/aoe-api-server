@@ -46,10 +46,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody CustomerAuthDTO customerAuthDTO){
         CustomerAuthDTO customerCredential = customerServices.getCustomerCredentialByEmail(customerAuthDTO.getEmail());
-        if (passValidationUtil.validatePassword(customerAuthDTO.getPassword(), customerCredential.getPassword()))
-            return ResponseEntity.ok(new LoginResponseDTO(jwtUtil.generateToken(String.valueOf(customerCredential.getId()))));
-        /*Remove condition and add search and result from database, now test id = 123*/
-        throw new RegularException("Invalid user credential", HttpStatus.UNAUTHORIZED.value());
+        if (customerCredential == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (!passValidationUtil.validatePassword(customerAuthDTO.getPassword(), customerCredential.getPassword()))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.ok(new LoginResponseDTO(jwtUtil.generateToken(String.valueOf(customerCredential.getId()))));
     }
     @GetMapping("/validate")
     public String validateTokenTest(@RequestHeader("Authorization") String token){
