@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class CustomerTaskDTOAssembleService {
     public static final String TRANSCRIBE_SERVICE_DEFAULT = "assemblyai";
     public static final String AI_SERVICE_DEFAULT = "vsegpt";
-    public static final String AI_MODEL_DEFAULT = "openai/gpt-4o-latest";
+    public static final String AI_MODEL_DEFAULT = "openai/gpt-4";
     public static final String TEXT_DISTANCE_METHOD = "levenshtein";
     @Autowired
     private VariantService variantService;
