@@ -5,6 +5,7 @@ import com.englishaoe.lesson.api.ai.AIServicesFactory;
 import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
+import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.TaskResultService;
 import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.dto.results.CheckDTO;
@@ -33,6 +34,8 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
     @Autowired
     private CustomerTaskService customerTaskService;
     @Autowired
+    private ExamService examService;
+    @Autowired
     private TasksCheckingTransactionServices tasksCheckingTransactionServices;
     @Transactional
     @Async
@@ -54,6 +57,8 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
                     customerTaskDTO.getId(),
                     CheckStatusEnum.COMPLETED.getStatus(),
                     TaskResultTypeEnum.EXPRESS.getTaskResultType());
+            if (customerTaskDTO.getExamId() != null)
+                examService.accumulateTaskGradeForExam(checkDTO.getGrade(), customerTaskDTO.getExamId());
             customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
         } catch (Exception e) {
             //TODO save error massage

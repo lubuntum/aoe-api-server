@@ -4,6 +4,7 @@ import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
 import com.englishaoe.lesson.database.entity.results.TaskResult;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
+import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.TaskResultService;
 import com.englishaoe.lesson.dto.results.CheckDTO;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
@@ -28,6 +29,8 @@ public class FirTaskChecker implements TaskChecker {
     TaskResultService taskResultService;
     @Autowired
     CustomerTaskService customerTaskService;
+    @Autowired
+    ExamService examService;
     //compare transcribe text and original for distance
     @Transactional
     @Async
@@ -44,6 +47,9 @@ public class FirTaskChecker implements TaskChecker {
                 customerTaskDTO.getId(),
                 CheckStatusEnum.COMPLETED.getStatus(),
                 TaskResultTypeEnum.EXPRESS.getTaskResultType());
+        if (customerTaskDTO.getExamId() != null)
+            examService.accumulateTaskGradeForExam(checkDTO.getGrade(), customerTaskDTO.getExamId());
+        customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
         //return resultCollect.collect(customerTaskDTO, checkDTO);
     }
 }

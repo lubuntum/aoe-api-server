@@ -36,7 +36,7 @@ public class CheckTaskScheduleMessageQueue {
         try{
             CustomerTask customerTask = customerTaskService.getOldestCustomerTaskByStatus(CheckStatusEnum.TRANSCRIBED.getStatus());
             if (customerTask == null) return;
-            customerTaskService.updateCheckStatus(
+             customerTaskService.updateCheckStatus(
                     customerTask.getId(),
                     CheckStatusEnum.CHECKING.getStatus(),
                     TaskResultTypeEnum.EXPRESS.getTaskResultType());

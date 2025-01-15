@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExamService {
@@ -23,5 +24,15 @@ public class ExamService {
     }
     public List<Exam> getExamsByCustomerIdAndVariantId(Long customerId, Long variantId){
         return examRepository.findByCustomerIdAndVariantId(customerId, variantId);
+    }
+    public void accumulateTaskGradeForExam(int taskGrade, Long examId) {
+        Optional<Exam> examOptional = examRepository.findById(examId);
+        if (examOptional.isEmpty()) return;
+        Exam exam = examOptional.get();
+        if (exam.getExpressTotalGrade() == null)
+            exam.setExpressTotalGrade(taskGrade);
+        else
+            exam.setExpressTotalGrade(exam.getExpressTotalGrade() + taskGrade);
+        examRepository.save(exam);
     }
 }
