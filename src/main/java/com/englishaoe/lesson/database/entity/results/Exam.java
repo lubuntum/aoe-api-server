@@ -21,6 +21,10 @@ public class Exam {
     private Long variantId;
     @Column(name = "user_id")
     private Long customerId;
+    @Column(name = "express_check_status_id")
+    private Long expressCheckStatusId;
+    @Column(name = "expert_check_status_id")
+    private Long expertCheckStatusId;
     @Column(name = "exam_complete_date")
     private String examCompleteDate;
     @Column(name = "express_send_date")
@@ -31,5 +35,11 @@ public class Exam {
     private Integer expressTotalGrade;
     @Column(name = "expert_total_grade")
     private Integer expertTotalGrade;
+    @ManyToOne()
+    @JoinColumn(name = "express_check_status_id", insertable = false, updatable = false)
+    private CheckStatus expressCheckStatus;
+    @ManyToOne
+    @JoinColumn(name = "expert_check_status_id", insertable = false, updatable = false)
+    private CheckStatus expertCheckStatus;
 
 }

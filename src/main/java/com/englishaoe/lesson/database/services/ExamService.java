@@ -1,7 +1,10 @@
 package com.englishaoe.lesson.database.services;
 
+import com.englishaoe.lesson.database.entity.results.CheckStatus;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.Exam;
+import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
+import com.englishaoe.lesson.database.repository.CheckStatusRepository;
 import com.englishaoe.lesson.database.repository.CustomerTaskRepository;
 import com.englishaoe.lesson.database.repository.ExamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ public class ExamService {
     //exam and customerTask related and connected, use in one ExamService
     @Autowired
     ExamRepository examRepository;
+    @Autowired
+    CheckStatusRepository checkStatusRepository;
     public Exam createExam(Exam exam){
         return examRepository.save(exam);
     }
@@ -33,6 +38,18 @@ public class ExamService {
             exam.setExpressTotalGrade(taskGrade);
         else
             exam.setExpressTotalGrade(exam.getExpressTotalGrade() + taskGrade);
+        examRepository.save(exam);
+    }
+    public void updateExamCheckStatus(Long examId, String statusName, String checkType){
+        Optional<Exam> examOptional = examRepository.findById(examId);
+        CheckStatus checkStatus = checkStatusRepository.findByStatus(statusName);
+        if (examOptional.isEmpty())
+            throw new RuntimeException("Exam not found with id: "+ examId);
+        Exam exam = examOptional.get();
+        Long checkStatusId = checkStatus == null ? null : checkStatus.getId();
+        if (checkType.equals(TaskResultTypeEnum.EXPRESS.getTaskResultType()))
+            exam.setExpressCheckStatusId(checkStatusId);
+        else exam.setExpertCheckStatusId(checkStatusId);
         examRepository.save(exam);
     }
 }
