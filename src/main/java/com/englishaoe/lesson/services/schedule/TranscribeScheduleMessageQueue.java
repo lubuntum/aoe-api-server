@@ -35,7 +35,7 @@ public class TranscribeScheduleMessageQueue {
         startTask();
     }
     public void startTask(){
-        scheduler.scheduleWithFixedDelay(this::performTask, 0,5, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(this::performTask, 0,15, TimeUnit.SECONDS);
     }
     /*TODO
     *  also after receiving response from transcrip API check status code
@@ -49,8 +49,7 @@ public class TranscribeScheduleMessageQueue {
         if(customerTask == null) return;
         CustomerTaskDTO customerTaskDTO =
                 new Gson().fromJson(customerTask.getTempCheckingData(), CustomerTaskDTO.class);
-        //TODO Now not working, do it for answer, and if condition working then not use AI just go next status
-        if (customerTaskDTO.getTranscribateText() != null && !customerTaskDTO.getTranscribateText().trim().isBlank() && customerTaskDTO.getTranscribateText().length() >= 20) {
+        if (customerTask.getAnswer() != null && !customerTask.getAnswer().trim().isBlank() && customerTask.getAnswer().length() >= 20) {
             customerTaskService.updateCheckStatus(
                     customerTask.getId(),
                     CheckStatusEnum.TRANSCRIBED.getStatus(),
