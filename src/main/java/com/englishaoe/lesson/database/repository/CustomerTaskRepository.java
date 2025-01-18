@@ -5,6 +5,7 @@ import com.englishaoe.lesson.database.entity.variants.Variant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -22,4 +23,8 @@ public interface CustomerTaskRepository extends JpaRepository<CustomerTask, Long
     CustomerTask findCustomerTaskByStatus(@Param("status") String status);
     @Query("select ct from CustomerTask ct where ct.expressCheckStatus.status = :status order by ct.completeDate ASC limit 1")
     CustomerTask findOldestCustomerTaskWithStatus(@Param("status") String status);
+
+    Long countByExamId(Long examId);
+    @Query("select count(ct) from CustomerTask ct where ct.examId = :examId and ct.expressCheckStatusId = :statusId")
+    Long countByExamIdAndCheckStatusId(@Param("examId") Long examId, @Param("statusId") Long statusId);
 }

@@ -51,7 +51,6 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
             CheckDTO checkDTO = gson.fromJson(jsonResponseContent, CheckDTO.class);
             validateCheckDTO(checkDTO);
             taskResultService.saveTaskResult(resultCollect.collect(customerTaskDTO, checkDTO));
-            //TODO if customerTask has examId, then add grade to express_total_grade
             //update status
             customerTaskService.updateCheckStatus(
                     customerTaskDTO.getId(),
@@ -59,6 +58,11 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
                     TaskResultTypeEnum.EXPRESS.getTaskResultType());
             if (customerTaskDTO.getExamId() != null)
                 examService.accumulateTaskGradeForExam(checkDTO.getGrade(), customerTaskDTO.getExamId());
+            if (customerTaskDTO.getExamId() != null && customerTaskService.isAllCustomerTasksCheckedForExam(customerTaskDTO.getExamId()))
+                examService.updateExamCheckStatus(
+                        customerTaskDTO.getExamId(),
+                        CheckStatusEnum.COMPLETED.getStatus(),
+                        TaskResultTypeEnum.EXPRESS.getTaskResultType());
             customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
         } catch (Exception e) {
             //TODO save error massage

@@ -49,6 +49,11 @@ public class FirTaskChecker implements TaskChecker {
                 TaskResultTypeEnum.EXPRESS.getTaskResultType());
         if (customerTaskDTO.getExamId() != null)
             examService.accumulateTaskGradeForExam(checkDTO.getGrade(), customerTaskDTO.getExamId());
+        if (customerTaskDTO.getExamId() != null && customerTaskService.isAllCustomerTasksCheckedForExam(customerTaskDTO.getExamId()))
+            examService.updateExamCheckStatus(
+                    customerTaskDTO.getExamId(),
+                    CheckStatusEnum.COMPLETED.getStatus(),
+                    TaskResultTypeEnum.EXPRESS.getTaskResultType());
         customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
         //return resultCollect.collect(customerTaskDTO, checkDTO);
     }

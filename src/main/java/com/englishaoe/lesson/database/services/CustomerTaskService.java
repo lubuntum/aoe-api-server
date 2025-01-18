@@ -1,15 +1,18 @@
 package com.englishaoe.lesson.database.services;
 
 import com.englishaoe.lesson.database.entity.results.CheckStatus;
+import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.repository.CheckStatusRepository;
 import com.englishaoe.lesson.database.repository.CustomerTaskRepository;
+import org.hibernate.annotations.Check;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -50,9 +53,10 @@ public class CustomerTaskService {
         if (customerTaskOptional.isEmpty())
             throw new RuntimeException("CustomerTask not found with id: " + customerTaskId);
         CustomerTask customerTask = customerTaskOptional.get();
+        Long checkStatusId = checkStatus == null ? null : checkStatus.getId();
         if (checkType.equals(TaskResultTypeEnum.EXPRESS.getTaskResultType()))
-            customerTask.setExpressCheckStatusId(checkStatus == null ? null : checkStatus.getId());
-        else customerTask.setExpertCheckStatusId(checkStatus == null ? null : checkStatus.getId());
+            customerTask.setExpressCheckStatusId(checkStatusId);
+        else customerTask.setExpertCheckStatusId(checkStatusId);
         customerTaskRepository.save(customerTask);
     }
     public void updateTempCheckingData(Long customerTaskId, String checkingData){
@@ -68,6 +72,16 @@ public class CustomerTaskService {
     }
     public CustomerTask getOldestCustomerTaskByStatus(String status){
         return customerTaskRepository.findOldestCustomerTaskWithStatus(status);
+    }
+    /**
+     * Check if examen is completed (all his tasks must be also completed)
+     * */
+    public boolean isAllCustomerTasksCheckedForExam(Long examId) {
+        CheckStatus checkStatus = checkStatusRepository.findByStatus(CheckStatusEnum.COMPLETED.getStatus());
+        if (checkStatus == null) throw new RuntimeException("Status " + CheckStatusEnum.COMPLETED.getStatus() + " not found");
+        Long totalTasks = customerTaskRepository.countByExamId(examId);
+        Long completedTasks = customerTaskRepository.countByExamIdAndCheckStatusId(examId, checkStatus.getId());
+        return Objects.equals(totalTasks, completedTasks);
     }
 
 }
