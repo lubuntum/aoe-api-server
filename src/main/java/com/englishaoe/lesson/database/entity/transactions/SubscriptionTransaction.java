@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -16,13 +18,17 @@ public class SubscriptionTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id")//change to subscription_id
-    private Subscription subscription;
+    @Column(name = "subscription_type_id")
+    private Long subscriptionTypeId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")//change to customer_id
     private Customer customer;
     @Column(name = "transaction_date")
     private String transactionDate;
+    @Column(name = "expire_date")
+    private String expireDate;
+    @Column(name = "amount_paid")
+    private BigDecimal amountPaid;
+
 
 }
