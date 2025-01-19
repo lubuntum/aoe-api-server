@@ -2,7 +2,6 @@ package com.englishaoe.lesson.database.entity;
 
 import com.englishaoe.lesson.database.entity.partnership.Promocode;
 import com.englishaoe.lesson.database.entity.role.Role;
-import com.englishaoe.lesson.database.entity.transactions.Subscription;
 import com.englishaoe.lesson.database.entity.transactions.SubscriptionTransaction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
