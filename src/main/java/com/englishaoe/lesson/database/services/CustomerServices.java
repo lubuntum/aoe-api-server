@@ -64,6 +64,13 @@ public class CustomerServices {
         customerRepository.save(customer);
         return true;
     }
+    //TODO check if previous customer sub not expired, then add remains days to current exp date
+    public void updateCustomerSubscriptionInfo(String purchaseDate, String expireDate, Long customerId){
+        Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new NullPointerException("Customer not found"));
+        customer.setPurchaseSubDate(purchaseDate);
+        customer.setExpireSubDate(expireDate);
+        customerRepository.save(customer);
+    }
     public Customer saveCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
