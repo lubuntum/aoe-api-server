@@ -37,8 +37,10 @@ public class Customer {
     private String registrationDate;
     @Column(name = "current_balance", precision = 10, scale = 2)
     private BigDecimal currentBalance;
-    @Column(name = "actual_subscription_date")
-    private String actualSubscriptionDate;
+    @Column(name = "purchase_sub_date")
+    private String purchaseSubDate;
+    @Column(name = "expire_sub_date")
+    private String expireSubDate;
 
     @ManyToMany
     @JoinTable(

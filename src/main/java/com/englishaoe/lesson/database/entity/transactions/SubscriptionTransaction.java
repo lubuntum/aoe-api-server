@@ -20,8 +20,10 @@ public class SubscriptionTransaction {
     private Long id;
     @Column(name = "subscription_type_id")
     private Long subscriptionTypeId;
+    @Column(name = "customer_id")
+    private Long customerId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")//change to customer_id
+    @JoinColumn(name = "customer_id", insertable = false, updatable = false)//change to customer_id
     private Customer customer;
     @Column(name = "transaction_date")
     private String transactionDate;
@@ -29,6 +31,4 @@ public class SubscriptionTransaction {
     private String expireDate;
     @Column(name = "amount_paid")
     private BigDecimal amountPaid;
-
-
 }
