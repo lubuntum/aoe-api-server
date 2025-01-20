@@ -15,7 +15,8 @@ public class CustomerAccountDTO {
     private String registrationDate;
     private BigDecimal currentBalance;
     //Actual date of purchasing subscription
-    private String actualSubscriptionDate;
+    private String purchaseSubDate;
+    private String expireSubDate;
     //Name for organization or individual who invited customer
     private String partnerName;
 

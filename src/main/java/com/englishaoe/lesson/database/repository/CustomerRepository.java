@@ -21,7 +21,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT c FROM Customer c LEFT JOIN FETCH c.roles WHERE c.id = :id")
     Customer findCustomerWithRoles(@Param("id") Long id);
     @Query("SELECT new com.englishaoe.lesson.dto.account.CustomerAccountDTO(" +
-            "c.username, c.email, c.name, c.secondName, c.registrationDate,c.currentBalance , c.actualSubscriptionDate," +
+            "c.username, c.email, c.name, c.secondName, c.registrationDate,c.currentBalance , c.purchaseSubDate, c.expireSubDate, " +
             "p.partnerName) FROM Customer c " +
             "LEFT JOIN c.promocodeList pc " +
             "LEFT JOIN pc.partner p " +
