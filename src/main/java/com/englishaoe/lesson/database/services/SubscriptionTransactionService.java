@@ -4,6 +4,7 @@ import com.englishaoe.lesson.database.entity.transactions.SubscriptionTransactio
 import com.englishaoe.lesson.database.entity.transactions.SubscriptionType;
 import com.englishaoe.lesson.database.repository.SubscriptionTransactionRepository;
 import com.englishaoe.lesson.database.repository.SubscriptionTypeRepository;
+import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.utility.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,13 @@ public class SubscriptionTransactionService {
             throw new IllegalArgumentException("Picked subscription type is no more valid");
 
         if (!customerServices.subBalanceToCustomerById(customerId, subscriptionType.getPrice()))
-            throw new IllegalArgumentException("Not enough balance");
+            throw new RegularException("Not enough balance", 403);
 
         SubscriptionTransaction subTransaction = new SubscriptionTransaction();
         subTransaction.setCustomerId(customerId);
         subTransaction.setSubscriptionTypeId(subscriptionTypeId);
         subTransaction.setAmountPaid(subscriptionType.getPrice());
         subTransaction.setTransactionDate(DateUtil.getCurrentDate());
-        //TODO add not month but month * 30 days
         subTransaction.setExpireDate(DateUtil.getExpireDate(subscriptionType.getMonthsCount()));
         subscriptionTransactionRepository.save(subTransaction);
 
