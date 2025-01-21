@@ -6,6 +6,7 @@ import com.englishaoe.lesson.database.repository.CustomerRepository;
 import com.englishaoe.lesson.dto.account.CustomerAccountDTO;
 import com.englishaoe.lesson.dto.account.CustomerHeaderDTO;
 import com.englishaoe.lesson.dto.authorization.CustomerAuthDTO;
+import com.englishaoe.lesson.utility.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,7 +69,7 @@ public class CustomerServices {
     public void updateCustomerSubscriptionInfo(String purchaseDate, String expireDate, Long customerId){
         Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new NullPointerException("Customer not found"));
         customer.setPurchaseSubDate(purchaseDate);
-        customer.setExpireSubDate(expireDate);
+        customer.setExpireSubDate(DateUtil.extendSubscriptionPeriod(expireDate, customer.getExpireSubDate()));
         customerRepository.save(customer);
     }
     public Customer saveCustomer(Customer customer) {
