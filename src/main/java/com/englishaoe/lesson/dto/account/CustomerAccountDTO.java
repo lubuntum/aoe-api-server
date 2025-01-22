@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;
-
+/**
+ * Using in Customer AccountPage for get all needed details
+ * */
 @Data
 @AllArgsConstructor
 public class CustomerAccountDTO {
