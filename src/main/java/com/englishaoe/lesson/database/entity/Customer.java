@@ -1,15 +1,13 @@
 package com.englishaoe.lesson.database.entity;
 
-import com.englishaoe.lesson.database.entity.partnership.Promocode;
+import com.englishaoe.lesson.database.entity.partnership.PromocodeUsage;
 import com.englishaoe.lesson.database.entity.role.Role;
 import com.englishaoe.lesson.database.entity.transactions.SubscriptionTransaction;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.print.DocFlavor;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -53,5 +51,5 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
     private List<SubscriptionTransaction> subscriptionTransactions = new LinkedList<>();
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Promocode> promocodeList = new LinkedList<>();
+    private List<PromocodeUsage> promocodeUsageList = new LinkedList<>();
 }

@@ -23,4 +23,6 @@ public class Partnership {
     private String partnerRate;
     @Column(name = "contract_date")
     private String contractDate;
+    @Column(name = "promocode")
+    private String promocode;
 }

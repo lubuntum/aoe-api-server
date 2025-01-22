@@ -18,6 +18,8 @@ public class Partner {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+    @Column(name = "customer_id")
+    private Long customerId;
     @ManyToOne
     @JoinColumn(name = "partnership_id")
     private Partnership partnership;
@@ -33,6 +35,8 @@ public class Partner {
     private String BIK;
     @Column(name = "rs")
     private String RS;
+    @Column(name = "is_approved")
+    private Boolean isApproved;
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Promocode> promocodeList = new LinkedList<>();
+    private List<PromocodeUsage> promocodeUsageList = new LinkedList<>();
 }
