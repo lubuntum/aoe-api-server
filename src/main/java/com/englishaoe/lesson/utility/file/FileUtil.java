@@ -15,10 +15,11 @@ public class FileUtil {
             File directory = new File(folderPath);
             if (!directory.exists())
                 directory.mkdirs();
-            String filePath = folderPath + (addPrefix ? generateUniqueFilename(file.getOriginalFilename()) : file.getOriginalFilename());
+            String filename = (addPrefix ? generateUniqueFilename(file.getOriginalFilename()) : file.getOriginalFilename());
+            String filePath = folderPath + filename;
             File destinationFile = new File(filePath);
             file.transferTo(destinationFile);
-            return getStaticPath(folderPath) + file.getOriginalFilename();
+            return getStaticPath(folderPath) + filename;
         } catch (IOException e) {
             return e.getMessage();
         }
