@@ -4,6 +4,8 @@ import com.englishaoe.lesson.config.AppConfig;
 import com.englishaoe.lesson.database.entity.Customer;
 import com.englishaoe.lesson.database.repository.CustomerRepository;
 import com.englishaoe.lesson.database.services.CustomerServices;
+import com.englishaoe.lesson.database.services.PartnerService;
+import com.englishaoe.lesson.database.services.PartnerTypeService;
 import com.englishaoe.lesson.dto.account.CustomerRegistrationDTO;
 import com.englishaoe.lesson.dto.account.CustomerRegistrationDTOMapper;
 import com.englishaoe.lesson.dto.authorization.CustomerAuthDTO;
@@ -32,7 +34,8 @@ public class AuthController {
     private PassValidationUtil passValidationUtil;
     @Autowired
     private CustomerServices customerServices;
-    //TODO if isPartnerPropose is true create partner table with isApproved false
+    @Autowired
+    private PartnerService partnerService;
     @PostMapping("/registration")
     public ResponseEntity<String> register(@RequestBody CustomerRegistrationDTO customer){
         if (customer == null)
@@ -41,6 +44,7 @@ public class AuthController {
             throw new RegularException("Email already exists", HttpStatus.CONFLICT.value());
         customer.setPassword(passValidationUtil.hashPassword(customer.getPassword()));
         Customer savedCustomer = customerServices.saveCustomer(CustomerRegistrationDTOMapper.parse(customer));
+        if(customer.getIsPartnerProposal()) partnerService.createNotApprovedPartnerForCustomerAccount(savedCustomer.getId());
         if (savedCustomer == null)
             throw new RegularException("Unexpected error occurred while saving customer", HttpStatus.INTERNAL_SERVER_ERROR.value());
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration succeed");
