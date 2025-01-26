@@ -6,8 +6,10 @@ import com.englishaoe.lesson.database.repository.CustomerRepository;
 import com.englishaoe.lesson.dto.account.CustomerAccountDTO;
 import com.englishaoe.lesson.dto.account.CustomerHeaderDTO;
 import com.englishaoe.lesson.dto.authorization.CustomerAuthDTO;
+import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.utility.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,6 +20,8 @@ import java.util.Optional;
 public class CustomerServices {
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private RoleService roleService;
     public Customer getCustomerById(Long id){
         return customerRepository.findById(id).orElse(null);
     }
@@ -74,6 +78,15 @@ public class CustomerServices {
     }
     public Customer saveCustomer(Customer customer) {
         return customerRepository.save(customer);
+    }
+    public void addRoleToCustomer(Long customerId, String roleName) {
+        Customer customer = customerRepository.findById(customerId).orElseThrow(
+                ()-> new RegularException("Customer not found", HttpStatus.FORBIDDEN.value()));
+        Role role = roleService.getRoleByName(roleName);
+        if (role == null) throw new RegularException("Role not found", HttpStatus.FORBIDDEN.value());
+        if (customer.getRoles().stream().anyMatch(r -> r.getName().equals(role.getName()))) return;
+        customer.getRoles().add(role);
+        customerRepository.save(customer);
     }
     public Customer getCustomerByEmail(String email){
         return customerRepository.findByEmail(email);
