@@ -94,9 +94,6 @@ public class ResultController {
         //return response to user
         return ResponseEntity.ok(CheckStatusEnum.UNTRANSCRIBED.getStatus());
     }
-    /*TODO
-    *  1 remove temp data after task is checked
-    *  2 if customerTask relate to exam, add total grade for task to Exam result, like sum*/
     @PostMapping("/exam-tasks-express-queue")
     public ResponseEntity<String> examTaskExpressQueue(@RequestParam Long examId,
                                                        @RequestHeader("Authorization") String token){
