@@ -1,5 +1,6 @@
 package com.englishaoe.lesson.database.entity.partnership;
 
+import com.englishaoe.lesson.database.entity.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,9 +21,8 @@ public class Partner {
     private Long id;
     @Column(name = "customer_id")
     private Long customerId;
-    @ManyToOne
-    @JoinColumn(name = "partnership_id")
-    private Partnership partnership;
+    @Column(name = "partner_type_id")
+    private Long partnerTypeId;
     @Column(name = "partner_name")
     private String partnerName;
     @Column(name = "phone_number")
@@ -37,6 +37,13 @@ public class Partner {
     private String RS;
     @Column(name = "is_approved")
     private Boolean isApproved;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_type_id", insertable = false, updatable = false)
+    PartnerType partnerType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", insertable = false, updatable = false)
+    Customer customer;
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<PromocodeUsage> promocodeUsageList = new LinkedList<>();
+    //TODO make ManyToMany List<Customers> who enter promocode
 }

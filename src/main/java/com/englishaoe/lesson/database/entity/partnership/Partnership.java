@@ -17,10 +17,12 @@ public class Partnership {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+    @Column(name = "partner_id")
+    private Long partnerId;
     @Column(name = "discount")
-    private String discount;
+    private Double discount;
     @Column(name = "partner_rate")
-    private String partnerRate;
+    private Double partnerRate;
     @Column(name = "contract_date")
     private String contractDate;
     @Column(name = "promocode")
