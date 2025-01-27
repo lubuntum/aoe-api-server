@@ -39,6 +39,8 @@ public class Customer {
     private String purchaseSubDate;
     @Column(name = "expire_sub_date")
     private String expireSubDate;
+    @Column(name = "patronymic")
+    private String patronymic;
 
     @ManyToMany
     @JoinTable(

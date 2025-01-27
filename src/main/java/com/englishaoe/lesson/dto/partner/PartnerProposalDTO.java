@@ -21,4 +21,8 @@ public class PartnerProposalDTO {
     private String secondName;
     private String registrationDate;
     private BigDecimal revenue;
+    private String INN;
+    private String KPP;
+    private String BIK;
+    private String RS;
 }

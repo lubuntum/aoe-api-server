@@ -10,14 +10,16 @@ import java.util.List;
 public interface PartnerRepository extends JpaRepository<Partner, Long> {
     @Query("SELECT new com.englishaoe.lesson.dto.partner.PartnerProposalDTO(" +
             "p.id, p.customerId, pT.type, p.partnerName, p.phoneNumber, p.isApproved, " +
-            "c.email, c.name, c.secondName, c.registrationDate, p.revenue) FROM Partner p " +
+            "c.email, c.name, c.secondName, c.registrationDate, p.revenue, " +
+            "p.INN, p.KPP, p.BIK, p.RS) FROM Partner p " +
             "LEFT JOIN p.partnerType pT " +
             "LEFT JOIN p.customer c " +
             "WHERE p.isApproved=:isApproved")
     List<PartnerProposalDTO> findPartnersByApproving(Boolean isApproved);
     @Query("SELECT new com.englishaoe.lesson.dto.partner.PartnerProposalDTO(" +
             "p.id, p.customerId, pT.type, p.partnerName, p.phoneNumber, p.isApproved, " +
-            "c.email, c.name, c.secondName, c.registrationDate, p.revenue) FROM Partner p " +
+            "c.email, c.name, c.secondName, c.registrationDate, p.revenue, " +
+            "p.INN, p.KPP, p.BIK, p.RS) FROM Partner p " +
             "LEFT JOIN p.partnerType pT " +
             "LEFT JOIN p.customer c")
     List<PartnerProposalDTO> findAllPartners();
