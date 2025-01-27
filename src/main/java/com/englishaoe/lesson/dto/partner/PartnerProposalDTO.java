@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +16,9 @@ public class PartnerProposalDTO {
     private String partnerName;
     private String phoneNumber;
     private Boolean isApproved;
+    private String email;
     private String name;
     private String secondName;
     private String registrationDate;
+    private BigDecimal revenue;
 }

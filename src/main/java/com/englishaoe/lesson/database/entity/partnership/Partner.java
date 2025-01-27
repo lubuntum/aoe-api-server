@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,6 +38,8 @@ public class Partner {
     private String RS;
     @Column(name = "is_approved")
     private Boolean isApproved;
+    @Column(name = "revenue")
+    private BigDecimal revenue;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_type_id", insertable = false, updatable = false)
     PartnerType partnerType;

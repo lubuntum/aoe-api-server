@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -21,7 +22,8 @@ public class PartnerService {
     public void createNotApprovedPartnerForCustomerAccount(Long customerId){
         Partner partner = new Partner();
         partner.setCustomerId(customerId);
-        partner.setPartnerTypeId(partnerTypeService.getPartnerTypeIdByType(PartnerTypeEnum.INDIVIDUAL.getType()));//TODO found person partnerType id's and set it here
+        partner.setPartnerTypeId(partnerTypeService.getPartnerTypeIdByType(PartnerTypeEnum.INDIVIDUAL.getType()));
+        partner.setRevenue(new BigDecimal("0.0"));
         partner.setIsApproved(false);
         partnerRepository.save(partner);
     }
