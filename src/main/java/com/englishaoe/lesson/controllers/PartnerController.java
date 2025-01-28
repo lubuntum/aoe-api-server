@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -51,5 +52,13 @@ public class PartnerController {
         }
         partnershipService.createPartnershipForPartner(PartnerProposalDTOMapper.parse(partner),0.0, 0.1);
         return ResponseEntity.ok(String.format("partner %s approved",partner.getPartnerName()));
+    }
+    @PostMapping("/pay")
+    public ResponseEntity<Boolean> payToPartnerAmount(@RequestHeader("Authorization")String token,
+                                                    @RequestParam("partnerId") Long partnerId,
+                                                    @RequestParam("amount") BigDecimal amount){
+        if (!authorizationService.isCustomerAdmin(token))
+            throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.ok(partnerService.subAmountFromPartnerRevenueById(partnerId, amount));
     }
 }
