@@ -20,8 +20,7 @@ public class SubscriptionController {
     @Autowired
     SubscriptionTransactionService subscriptionTransactionService;
     @GetMapping("/valid-subscriptions")
-    public ResponseEntity<List<SubscriptionType>> validSubscriptions(@RequestHeader("Authorization") String token){
-        jwtUtil.extractSubject(token);
+    public ResponseEntity<List<SubscriptionType>> validSubscriptions(){
         return ResponseEntity.ok(subscriptionTypeService.getAllValidSubscriptionType());
     }
     @PostMapping("/purchase-subscription")
