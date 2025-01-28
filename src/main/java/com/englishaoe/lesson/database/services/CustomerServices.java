@@ -77,6 +77,7 @@ public class CustomerServices {
         customerRepository.save(customer);
     }
     public Customer saveCustomer(Customer customer) {
+        customer.setEmail(customer.getEmail().toLowerCase());
         return customerRepository.save(customer);
     }
     public void addRoleToCustomer(Long customerId, String roleName) {

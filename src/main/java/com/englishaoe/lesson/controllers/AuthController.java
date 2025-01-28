@@ -51,7 +51,7 @@ public class AuthController {
     }
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody CustomerAuthDTO customerAuthDTO){
-        CustomerAuthDTO customerCredential = customerServices.getCustomerCredentialByEmail(customerAuthDTO.getEmail());
+        CustomerAuthDTO customerCredential = customerServices.getCustomerCredentialByEmail(customerAuthDTO.getEmail().toLowerCase());
         if (customerCredential == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         if (!passValidationUtil.validatePassword(customerAuthDTO.getPassword(), customerCredential.getPassword()))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
