@@ -15,11 +15,16 @@ public class PromocodeUsage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    Long id;
+    private Long id;
+    @Column(name = "partner_id", insertable = false, updatable = false)
+    private Long partnerId;
+    @Column(name = "customer_id", insertable = false, updatable = false)
+    private Long customerId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "partner_id")
+    @JoinColumn(name = "partner_id", nullable = false)
     private Partner partner;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 }

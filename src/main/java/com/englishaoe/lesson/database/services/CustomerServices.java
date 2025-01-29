@@ -23,7 +23,8 @@ public class CustomerServices {
     @Autowired
     private RoleService roleService;
     public Customer getCustomerById(Long id){
-        return customerRepository.findById(id).orElse(null);
+        return customerRepository.findById(id).orElseThrow(
+                ()->new RegularException("User not found", HttpStatus.FORBIDDEN.value()));
     }
     public CustomerHeaderDTO getCustomerHeaderDataById(Long id) {
         Customer customer = customerRepository.findCustomerWithRoles(id);

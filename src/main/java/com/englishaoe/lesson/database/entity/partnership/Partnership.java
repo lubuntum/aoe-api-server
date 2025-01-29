@@ -27,4 +27,7 @@ public class Partnership {
     private String contractDate;
     @Column(name = "promocode")
     private String promocode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_id", insertable = false, updatable = false)
+    Partner partner;
 }

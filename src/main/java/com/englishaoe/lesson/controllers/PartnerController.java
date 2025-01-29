@@ -6,6 +6,7 @@ import com.englishaoe.lesson.dto.partner.PartnerProposalDTO;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTOMapper;
 import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.services.AuthorizationService;
+import com.englishaoe.lesson.utility.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,8 @@ public class PartnerController {
     PartnershipService partnershipService;
     @Autowired
     AuthorizationService authorizationService;
+    @Autowired
+    private JwtUtil jwtUtil;
     //TODO
     // - write API on react side and make a call
     // - create a method for change partner approval (if false then delete partner data,
@@ -60,5 +63,10 @@ public class PartnerController {
         if (!authorizationService.isCustomerAdmin(token))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
         return ResponseEntity.ok(partnerService.subAmountFromPartnerRevenueById(partnerId, amount));
+    }
+    @PostMapping("/apply-promocode")
+    public ResponseEntity<Boolean> applyPromocodeForCustomer(@RequestHeader("Authorization")String token,
+                                                             @RequestParam("promocode")String promocode){
+        return ResponseEntity.ok(partnershipService.applyPromocode(promocode, Long.valueOf(jwtUtil.extractSubject(token))));
     }
 }
