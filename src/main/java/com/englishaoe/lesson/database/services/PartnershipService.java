@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
 import java.util.Objects;
 
 @Service
@@ -39,15 +40,14 @@ public class PartnershipService {
     }
     public Boolean applyPromocode(String promocode, Long customerId){
         Partner partner = partnershipRepository.findPartnerByPromocode(promocode);
-        if (partner == null) throw new RegularException("Invalid promocode", HttpStatus.FORBIDDEN.value());
+        if (partner == null) return false;
         Customer customer = customerServices.getCustomerById(customerId);
-        if (customer.getPromocodeUsageList().stream().anyMatch(
-                pU-> Objects.equals(pU.getCustomer().getId(), customer.getId()) &&
-                        Objects.equals(pU.getPartner().getId(), partner.getId())))
-            return false;
+        if (customer.getPromocodeUsageList() != null && customer.getPromocodeUsageList().size() > 0)
+            customer.getPromocodeUsageList().clear();
+        if (customer.getPromocodeUsageList() == null) customer.setPromocodeUsageList(new LinkedList<>());
         PromocodeUsage promocodeUsage = new PromocodeUsage();
-        promocodeUsage.setPartner(partner);
-        promocodeUsage.setCustomer(customer);
+        promocodeUsage.setPartnerId(partner.getId());
+        promocodeUsage.setCustomerId(customer.getId());
         customer.getPromocodeUsageList().add(promocodeUsage);
         customerServices.saveCustomer(customer);
         return true;

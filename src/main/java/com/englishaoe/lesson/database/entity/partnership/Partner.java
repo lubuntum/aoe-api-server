@@ -46,7 +46,5 @@ public class Partner {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", insertable = false, updatable = false)
     Customer customer;
-    @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<PromocodeUsage> promocodeUsageList = new LinkedList<>();
     //TODO make ManyToMany List<Customers> who enter promocode
 }

@@ -66,7 +66,7 @@ public class PartnerController {
     }
     @PostMapping("/apply-promocode")
     public ResponseEntity<Boolean> applyPromocodeForCustomer(@RequestHeader("Authorization")String token,
-                                                             @RequestParam("promocode")String promocode){
+                                                             @RequestParam("promocode") String promocode){
         return ResponseEntity.ok(partnershipService.applyPromocode(promocode, Long.valueOf(jwtUtil.extractSubject(token))));
     }
 }

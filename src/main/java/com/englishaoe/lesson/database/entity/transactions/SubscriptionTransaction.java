@@ -22,9 +22,6 @@ public class SubscriptionTransaction {
     private Long subscriptionTypeId;
     @Column(name = "customer_id")
     private Long customerId;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", insertable = false, updatable = false)//change to customer_id
-    private Customer customer;
     @Column(name = "transaction_date")
     private String transactionDate;
     @Column(name = "expire_date")

@@ -50,8 +50,8 @@ public class Customer {
     )
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
+    @OneToMany(mappedBy = "customerId", cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
     private List<SubscriptionTransaction> subscriptionTransactions = new LinkedList<>();
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "customerId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<PromocodeUsage> promocodeUsageList = new LinkedList<>();
 }

@@ -23,4 +23,5 @@ public interface PartnerRepository extends JpaRepository<Partner, Long> {
             "LEFT JOIN p.partnerType pT " +
             "LEFT JOIN p.customer c")
     List<PartnerProposalDTO> findAllPartners();
+
 }
