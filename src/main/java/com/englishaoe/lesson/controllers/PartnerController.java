@@ -1,7 +1,11 @@
 package com.englishaoe.lesson.controllers;
 
+import com.englishaoe.lesson.database.entity.partnership.Partner;
+import com.englishaoe.lesson.database.entity.partnership.PartnerType;
 import com.englishaoe.lesson.database.services.PartnerService;
+import com.englishaoe.lesson.database.services.PartnerTypeService;
 import com.englishaoe.lesson.database.services.PartnershipService;
+import com.englishaoe.lesson.dto.partner.PartnerDTO;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTO;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTOMapper;
 import com.englishaoe.lesson.exceptions.RegularException;
@@ -24,6 +28,8 @@ public class PartnerController {
     PartnershipService partnershipService;
     @Autowired
     AuthorizationService authorizationService;
+    @Autowired
+    PartnerTypeService partnerTypeService;
     @Autowired
     private JwtUtil jwtUtil;
     //TODO
@@ -68,5 +74,14 @@ public class PartnerController {
     public ResponseEntity<Boolean> applyPromocodeForCustomer(@RequestHeader("Authorization")String token,
                                                              @RequestParam("promocode") String promocode){
         return ResponseEntity.ok(partnershipService.applyPromocode(promocode, Long.valueOf(jwtUtil.extractSubject(token))));
+    }
+    @GetMapping
+    public ResponseEntity<PartnerDTO> getPartnerData(@RequestHeader("Authorization")String token){
+        return ResponseEntity.ok(partnerService.getPartnerDTOById(Long.valueOf(jwtUtil.extractSubject(token))));
+    }
+    @GetMapping("/types")
+    public ResponseEntity<List<PartnerType>> getPartnerTypes(@RequestHeader("Authorization")String token){
+        jwtUtil.extractSubject(token);
+        return ResponseEntity.ok(partnerTypeService.getAllPartnerTypes());
     }
 }

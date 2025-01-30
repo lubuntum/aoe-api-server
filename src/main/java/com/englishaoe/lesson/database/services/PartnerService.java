@@ -3,11 +3,14 @@ package com.englishaoe.lesson.database.services;
 import com.englishaoe.lesson.database.entity.partnership.Partner;
 import com.englishaoe.lesson.database.entity.partnership.PartnerTypeEnum;
 import com.englishaoe.lesson.database.repository.PartnerRepository;
+import com.englishaoe.lesson.dto.partner.PartnerDTO;
+import com.englishaoe.lesson.dto.partner.PartnerDTOMapper;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTO;
 import com.englishaoe.lesson.exceptions.RegularException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,6 +22,8 @@ public class PartnerService {
     PartnerRepository partnerRepository;
     @Autowired
     PartnerTypeService partnerTypeService;
+    @Autowired
+    PromocodeUsageService promocodeUsageService;
 
     public void createNotApprovedPartnerForCustomerAccount(Long customerId){
         Partner partner = new Partner();
@@ -56,5 +61,12 @@ public class PartnerService {
 
     public void deletePartnerById(Long partnerId){
         partnerRepository.deleteById(partnerId);
+    }
+    @Transactional
+    public PartnerDTO getPartnerDTOById(Long partnerId){
+        Partner partner = partnerRepository.findById(partnerId).orElseThrow(
+                ()->new RegularException("Cannot find partner with provided id", HttpStatus.FORBIDDEN.value()));
+        Integer promocodeUsageCount = promocodeUsageService.getPromocodeUsageCountByPartnerId(partnerId);
+        return PartnerDTOMapper.toDTO(partner, promocodeUsageCount);
     }
 }

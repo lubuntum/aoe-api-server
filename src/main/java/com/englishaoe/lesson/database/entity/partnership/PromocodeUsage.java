@@ -1,6 +1,7 @@
 package com.englishaoe.lesson.database.entity.partnership;
 
 import com.englishaoe.lesson.database.entity.Customer;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
