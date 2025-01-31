@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -26,4 +27,13 @@ public class PromocodeUsage {
     @JoinColumn(name = "partner_id", insertable = false, updatable = false)
     private Partner partner;
 
+    @Override
+    public String toString() {
+        return "PromocodeUsage{" +
+                "id=" + id +
+                ", partnerId=" + partnerId +
+                ", customerId=" + customerId +
+                ", partner=" + partner.getPartnerName() +
+                '}';
+    }
 }

@@ -1,6 +1,7 @@
 package com.englishaoe.lesson.database.repository;
 
 import com.englishaoe.lesson.database.entity.partnership.Partner;
+import com.englishaoe.lesson.dto.partner.PartnerDTO;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,4 +24,20 @@ public interface PartnerRepository extends JpaRepository<Partner, Long> {
             "LEFT JOIN p.partnerType pT " +
             "LEFT JOIN p.customer c")
     List<PartnerProposalDTO> findAllPartners();
+
+    @Query("SELECT new com.englishaoe.lesson.dto.partner.PartnerDTO(" +
+            "p.id, pT.type, p.partnerName, p.phoneNumber, p.revenue, " +
+            "p.INN, p.KPP, p.BIK, p.RS, null) FROM Partner p " +
+            "LEFT JOIN p.partnerType pT " +
+            "WHERE p.id = :id")
+    PartnerDTO findPartnerDTOById(Long id);
+
+    @Query("SELECT new com.englishaoe.lesson.dto.partner.PartnerDTO(" +
+            "p.id, pT.type, p.partnerName, p.phoneNumber, p.revenue, " +
+            "p.INN, p.KPP, p.BIK, p.RS, null) FROM Partner p " +
+            "LEFT JOIN p.partnerType pT " +
+            "WHERE p.customerId = :customerId")
+    PartnerDTO findPartnerDTOByCustomerId(Long customerId);
+
+
 }

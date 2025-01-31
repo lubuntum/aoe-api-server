@@ -2,6 +2,7 @@ package com.englishaoe.lesson.controllers;
 
 import com.englishaoe.lesson.database.entity.partnership.Partner;
 import com.englishaoe.lesson.database.entity.partnership.PartnerType;
+import com.englishaoe.lesson.database.entity.role.RoleEnum;
 import com.englishaoe.lesson.database.services.PartnerService;
 import com.englishaoe.lesson.database.services.PartnerTypeService;
 import com.englishaoe.lesson.database.services.PartnershipService;
@@ -75,13 +76,25 @@ public class PartnerController {
                                                              @RequestParam("promocode") String promocode){
         return ResponseEntity.ok(partnershipService.applyPromocode(promocode, Long.valueOf(jwtUtil.extractSubject(token))));
     }
+    //TODO wrong need to find partner id by customerId
     @GetMapping
     public ResponseEntity<PartnerDTO> getPartnerData(@RequestHeader("Authorization")String token){
-        return ResponseEntity.ok(partnerService.getPartnerDTOById(Long.valueOf(jwtUtil.extractSubject(token))));
+        if (!authorizationService.isCustomerHasProvidedRole(token, RoleEnum.PARTNER) &&
+                !authorizationService.isCustomerHasProvidedRole(token, RoleEnum.ADMIN))
+            throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.ok(partnerService.getPartnerDTOByCustomerId(Long.valueOf(jwtUtil.extractSubject(token))));
     }
     @GetMapping("/types")
     public ResponseEntity<List<PartnerType>> getPartnerTypes(@RequestHeader("Authorization")String token){
         jwtUtil.extractSubject(token);
         return ResponseEntity.ok(partnerTypeService.getAllPartnerTypes());
+    }
+    @PostMapping("/update")
+    public ResponseEntity<PartnerDTO> updatePartnerData(@RequestHeader("Authorization")String token,
+                                                        @RequestBody PartnerDTO partnerDTO) {
+        if (!authorizationService.isCustomerHasProvidedRole(token, RoleEnum.PARTNER) &&
+            !authorizationService.isCustomerHasProvidedRole(token, RoleEnum.ADMIN))
+            throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.ok(partnerService.updatePartnerData(partnerDTO));
     }
 }

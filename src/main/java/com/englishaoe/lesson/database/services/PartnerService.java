@@ -1,6 +1,7 @@
 package com.englishaoe.lesson.database.services;
 
 import com.englishaoe.lesson.database.entity.partnership.Partner;
+import com.englishaoe.lesson.database.entity.partnership.PartnerType;
 import com.englishaoe.lesson.database.entity.partnership.PartnerTypeEnum;
 import com.englishaoe.lesson.database.repository.PartnerRepository;
 import com.englishaoe.lesson.dto.partner.PartnerDTO;
@@ -46,6 +47,13 @@ public class PartnerService {
         partnerRepository.save(partner);
         return true;
     }
+    public Boolean addAmountToPartnerRevenueById(Long partnerId, BigDecimal amount) {
+        PartnerDTO partnerDTO = partnerRepository.findPartnerDTOById(partnerId);
+        BigDecimal revenue = Optional.ofNullable(partnerDTO.getRevenue()).orElse(BigDecimal.ZERO);
+        partnerDTO.setRevenue(revenue.add(amount));
+        partnerRepository.save(PartnerDTOMapper.fromDTORevenueOnly(partnerDTO));
+        return true;
+    }
     public List<PartnerProposalDTO> getPartnersByApproving(Boolean isApproved) {
         return partnerRepository.findPartnersByApproving(isApproved);
     }
@@ -68,5 +76,25 @@ public class PartnerService {
                 ()->new RegularException("Cannot find partner with provided id", HttpStatus.FORBIDDEN.value()));
         Integer promocodeUsageCount = promocodeUsageService.getPromocodeUsageCountByPartnerId(partnerId);
         return PartnerDTOMapper.toDTO(partner, promocodeUsageCount);
+    }
+    public PartnerDTO updatePartnerData(PartnerDTO partnerDTO) {
+        //TODO get DTO class instead not partner
+        Partner partner = partnerRepository.findById(partnerDTO.getId()).orElseThrow(
+                ()-> new RegularException("Partner not found", HttpStatus.FAILED_DEPENDENCY.value()));
+        Long partnerTypeId = partnerTypeService.getPartnerTypeIdByType(partnerDTO.getType());
+        if (partnerTypeId == null)
+            throw new RegularException("Partner type not found", HttpStatus.FORBIDDEN.value());
+        partner.setPartnerTypeId(partnerTypeId);
+        partner.setPartnerName(partnerDTO.getPartnerName());
+        partner.setPhoneNumber(partnerDTO.getPartnerNumber());
+        partner.setINN(partnerDTO.getINN());
+        partner.setKPP(partnerDTO.getKPP());
+        partner.setBIK(partnerDTO.getBIK());
+        partner.setRS(partnerDTO.getRS());
+        return PartnerDTOMapper.toDTO(partnerRepository.save(partner),
+                promocodeUsageService.getPromocodeUsageCountByPartnerId(partnerDTO.getId()));
+    }
+    public PartnerDTO getPartnerDTOByCustomerId(Long customerId) {
+        return partnerRepository.findPartnerDTOByCustomerId(customerId);
     }
 }
