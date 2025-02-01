@@ -52,4 +52,7 @@ public class PartnershipService {
         customerServices.saveCustomer(customer);
         return true;
     }
+    public Partnership getPartnershipByPartnerId(Long partnerId) {
+        return partnershipRepository.findPartnershipByPartnerId(partnerId);
+    }
 }

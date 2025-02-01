@@ -2,6 +2,7 @@ package com.englishaoe.lesson.database.services;
 
 import com.englishaoe.lesson.database.entity.Customer;
 import com.englishaoe.lesson.database.entity.role.Role;
+import com.englishaoe.lesson.database.entity.role.RoleEnum;
 import com.englishaoe.lesson.database.repository.CustomerRepository;
 import com.englishaoe.lesson.dto.account.CustomerAccountDTO;
 import com.englishaoe.lesson.dto.account.CustomerHeaderDTO;
@@ -42,6 +43,12 @@ public class CustomerServices {
         if (customer.getRoles() == null) return false;
         return customer.getRoles().stream().anyMatch(role -> "admin".equals(role.getName()));
     }
+    public boolean isCustomerHasProvidedRole(Long id, RoleEnum roleEnum) {
+        Customer customer = customerRepository.findById(id).orElse(null);
+        if (customer == null) return false;
+        if (customer.getRoles() == null) return false;
+        return customer.getRoles().stream().anyMatch(role -> role.getName().equals(roleEnum.getRole()));
+    }
     public CustomerAccountDTO getCustomerAccountDataById(Long id){
         return customerRepository.findCustomerAccountData(id);
     }
@@ -70,7 +77,6 @@ public class CustomerServices {
         customerRepository.save(customer);
         return true;
     }
-    //TODO check if previous customer sub not expired, then add remains days to current exp date
     public void updateCustomerSubscriptionInfo(String purchaseDate, String expireDate, Long customerId){
         Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new NullPointerException("Customer not found"));
         customer.setPurchaseSubDate(purchaseDate);

@@ -5,6 +5,8 @@ import com.englishaoe.lesson.database.repository.TaskResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TaskResultService {
     @Autowired
@@ -12,5 +14,8 @@ public class TaskResultService {
 
     public TaskResult saveTaskResult(TaskResult taskResult) {
         return taskResultRepository.save(taskResult);
+    }
+    public List<TaskResult> getTaskResultByCustomerTaskId(Long customerTaskId){
+        return taskResultRepository.findTaskResultByCustomerTaskId(customerTaskId);
     }
 }

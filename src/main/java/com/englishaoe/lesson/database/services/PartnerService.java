@@ -51,7 +51,7 @@ public class PartnerService {
         PartnerDTO partnerDTO = partnerRepository.findPartnerDTOById(partnerId);
         BigDecimal revenue = Optional.ofNullable(partnerDTO.getRevenue()).orElse(BigDecimal.ZERO);
         partnerDTO.setRevenue(revenue.add(amount));
-        partnerRepository.save(PartnerDTOMapper.fromDTORevenueOnly(partnerDTO));
+        partnerRepository.updatePartnerRevenue(partnerDTO.getId(), partnerDTO.getRevenue());
         return true;
     }
     public List<PartnerProposalDTO> getPartnersByApproving(Boolean isApproved) {
@@ -95,6 +95,8 @@ public class PartnerService {
                 promocodeUsageService.getPromocodeUsageCountByPartnerId(partnerDTO.getId()));
     }
     public PartnerDTO getPartnerDTOByCustomerId(Long customerId) {
-        return partnerRepository.findPartnerDTOByCustomerId(customerId);
+        PartnerDTO partnerDTO = partnerRepository.findPartnerDTOByCustomerId(customerId);
+        partnerDTO.setPromocodeUsageCount(promocodeUsageService.getPromocodeUsageCountByPartnerId(partnerDTO.getId()));
+        return partnerDTO;
     }
 }

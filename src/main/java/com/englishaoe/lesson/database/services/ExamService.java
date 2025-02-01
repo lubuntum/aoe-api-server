@@ -1,15 +1,16 @@
 package com.englishaoe.lesson.database.services;
 
-import com.englishaoe.lesson.database.entity.results.CheckStatus;
-import com.englishaoe.lesson.database.entity.results.CustomerTask;
-import com.englishaoe.lesson.database.entity.results.Exam;
-import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
+import com.englishaoe.lesson.database.entity.results.*;
 import com.englishaoe.lesson.database.repository.CheckStatusRepository;
 import com.englishaoe.lesson.database.repository.CustomerTaskRepository;
 import com.englishaoe.lesson.database.repository.ExamRepository;
+import com.englishaoe.lesson.exceptions.RegularException;
+import com.englishaoe.lesson.utility.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,13 @@ public class ExamService {
     ExamRepository examRepository;
     @Autowired
     CheckStatusRepository checkStatusRepository;
+    public Exam getExamById(Long id){
+        return examRepository.findById(id).orElseThrow(
+                ()-> new RegularException("Exam not found", HttpStatus.FORBIDDEN.value()));
+    }
+    public void updateExpressGrade(Long id, Integer expressTotalGrade){
+        examRepository.updateExamExpressTotalGrade(id, expressTotalGrade);
+    }
     public Exam createExam(Exam exam){
         return examRepository.save(exam);
     }
@@ -49,7 +57,14 @@ public class ExamService {
         Long checkStatusId = checkStatus == null ? null : checkStatus.getId();
         if (checkType.equals(TaskResultTypeEnum.EXPRESS.getTaskResultType()))
             exam.setExpressCheckStatusId(checkStatusId);
-        else exam.setExpertCheckStatusId(checkStatusId);
+        else
+            exam.setExpertCheckStatusId(checkStatusId);
+        if (checkType.equals(TaskResultTypeEnum.EXPRESS.getTaskResultType()) &&
+                statusName.equals(CheckStatusEnum.COMPLETED.getStatus()))
+            exam.setExpressSendDate(DateUtil.getCurrentDate());
+        if (checkType.equals(TaskResultTypeEnum.EXPERT.getTaskResultType()) &&
+                statusName.equals(CheckStatusEnum.COMPLETED.getStatus()))
+            exam.setExpertSendDate(DateUtil.getCurrentDate());
         examRepository.save(exam);
     }
 }

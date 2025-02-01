@@ -83,5 +83,8 @@ public class CustomerTaskService {
         Long completedTasks = customerTaskRepository.countByExamIdAndCheckStatusId(examId, checkStatus.getId());
         return Objects.equals(totalTasks, completedTasks);
     }
+    public List<CustomerTask> getCustomerTasksByExamIdAndStatus(Long examId, CheckStatusEnum checkStatusEnum) {
+        return customerTaskRepository.findCustomerTaskByExamIdAndCheckStatus(examId, checkStatusEnum.getStatus());
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.englishaoe.lesson.database.repository;
 
+import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.variants.Variant;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,6 @@ public interface CustomerTaskRepository extends JpaRepository<CustomerTask, Long
     Long countByExamId(Long examId);
     @Query("select count(ct) from CustomerTask ct where ct.examId = :examId and ct.expressCheckStatusId = :statusId")
     Long countByExamIdAndCheckStatusId(@Param("examId") Long examId, @Param("statusId") Long statusId);
+    @Query("select ct from CustomerTask ct where ct.examId = :examId and ct.expressCheckStatus.status = :status")
+    List<CustomerTask> findCustomerTaskByExamIdAndCheckStatus(Long examId, String status);
 }

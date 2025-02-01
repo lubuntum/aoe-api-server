@@ -4,8 +4,11 @@ import com.englishaoe.lesson.database.entity.partnership.Partner;
 import com.englishaoe.lesson.dto.partner.PartnerDTO;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface PartnerRepository extends JpaRepository<Partner, Long> {
@@ -38,6 +41,11 @@ public interface PartnerRepository extends JpaRepository<Partner, Long> {
             "LEFT JOIN p.partnerType pT " +
             "WHERE p.customerId = :customerId")
     PartnerDTO findPartnerDTOByCustomerId(Long customerId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Partner p SET p.revenue = :revenue WHERE p.id = :id")
+    void updatePartnerRevenue(Long id, BigDecimal revenue);
 
 
 }
