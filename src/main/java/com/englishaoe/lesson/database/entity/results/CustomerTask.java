@@ -1,4 +1,5 @@
 package com.englishaoe.lesson.database.entity.results;
+import com.englishaoe.lesson.database.entity.variants.Task;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,6 +42,9 @@ public class CustomerTask {
     @ManyToOne()
     @JoinColumn(name = "expert_check_status_id", insertable = false, updatable = false)
     private CheckStatus expertCheckStatus;
-    @OneToMany(mappedBy = "customerTaskId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @ManyToOne()
+    @JoinColumn(name = "task_id", insertable = false,  updatable = false)
+    private Task task;
+    @OneToMany(mappedBy = "customerTaskId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskResult> taskResults;
 }
