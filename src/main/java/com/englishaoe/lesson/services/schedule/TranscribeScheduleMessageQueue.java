@@ -9,6 +9,7 @@ import com.englishaoe.lesson.database.services.CustomerTaskService;
 import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
 import com.englishaoe.lesson.services.transactions.TasksCheckingTransactionServices;
+import com.englishaoe.lesson.taskcheck.TaskCheckEndHandler;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Component;
 
@@ -24,14 +25,17 @@ public class TranscribeScheduleMessageQueue {
     private final TranscribeFactory transcribeFactory;
     private final TasksCheckingTransactionServices tasksCheckingTransactionServices;
     private final TaskTypeService taskTypeService;
+    private final TaskCheckEndHandler taskCheckEndHandler;
     public TranscribeScheduleMessageQueue(CustomerTaskService customerTaskService,
                                           TranscribeFactory transcribeFactory,
                                           TasksCheckingTransactionServices tasksCheckingTransactionServices,
-                                          TaskTypeService taskTypeService){
+                                          TaskTypeService taskTypeService,
+                                          TaskCheckEndHandler taskCheckEndHandler){
         this.customerTaskService = customerTaskService;
         this.transcribeFactory = transcribeFactory;
         this.tasksCheckingTransactionServices = tasksCheckingTransactionServices;
         this.taskTypeService = taskTypeService;
+        this.taskCheckEndHandler = taskCheckEndHandler;
         startTask();
     }
     public void startTask(){
@@ -72,9 +76,12 @@ public class TranscribeScheduleMessageQueue {
             customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.TRANSCRIBED.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
         } catch (Exception e) {
             System.err.print(e.getMessage());
+            /*
             tasksCheckingTransactionServices.refund(
                     customerTaskDTO.getCustomerId(), taskTypeService.getPriceByTaskType(customerTaskDTO.getTask().getTaskType()));
             customerTaskService.updateCheckStatus(customerTaskDTO.getId(), null, TaskResultTypeEnum.EXPRESS.getTaskResultType());
+             */
+            taskCheckEndHandler.failTaskCheck(customerTaskDTO);
         } finally {
             semaphore.release();
         }
