@@ -6,6 +6,7 @@ import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
+import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.TaskResultService;
 import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
@@ -39,17 +40,17 @@ public class ResultController {
     @Autowired
     private CustomerTaskService customerTaskService;
     @Autowired
-    private TaskResultService taskResultService;
-    @Autowired
     private TaskTypeService taskTypeService;
     @Autowired
     private TasksCheckingTransactionServices tasksCheckingTransactionServices;
+    @Autowired
+    private ExamService examService;
     /**
      * Method responsible for get results from AI for single task
      */
     @PostMapping("/task-express")
     public ResponseEntity<String> taskExpress(@RequestBody CustomerTaskDTO customerTaskDTO,
-                                                  @RequestHeader("Authorization") String token) throws IllegalAccessException {
+                                                  @RequestHeader("Authorization") String token) throws Exception {
         jwtUtil.extractSubject(token);
         //parse task content for using info when checking and dynamic prompts
         customerTaskDTO.getTask().parseTaskContent();
@@ -102,7 +103,10 @@ public class ResultController {
                 Long.valueOf(jwtUtil.extractSubject(token)),
                 taskTypeService.getTotalPrice()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Insufficient funds");
-
+        examService.updateExamCheckStatus(
+                examId,
+                CheckStatusEnum.CHECKING.getStatus(),
+                TaskResultTypeEnum.EXPRESS.getTaskResultType());
         prepareExamCustomerTaskService.prepareCustomerTasks(examId);
         //get 4 tasks by exam Id
         return ResponseEntity.ok("Exam set to checking");
