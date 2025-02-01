@@ -21,7 +21,7 @@ public class AssemblyAITranscribe implements APITranscribe {
     @Value("${audio.folderDir}")
     private String voicesDir;
     @Override
-    public String transcribe(String relativePath) {
+    public String transcribe(String relativePath) throws Exception  {
         try {
             AssemblyAI client = AssemblyAI.builder()
                     .apiKey(transcriptionApiKey)
@@ -39,9 +39,7 @@ public class AssemblyAITranscribe implements APITranscribe {
             }
             return transcript.getText().orElse(null);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            throw e;//just pass to parent method
         }
-
-        return null;
     }
 }
