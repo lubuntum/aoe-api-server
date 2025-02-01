@@ -10,9 +10,11 @@ import com.englishaoe.lesson.database.services.TaskResultService;
 import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.dto.results.CheckDTO;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
+import com.englishaoe.lesson.services.transactions.PartnerRevenueTransactionalServices;
 import com.englishaoe.lesson.services.transactions.TasksCheckingTransactionServices;
 import com.englishaoe.lesson.taskcheck.PromptBuilder;
 import com.englishaoe.lesson.taskcheck.ResultCollect;
+import com.englishaoe.lesson.taskcheck.TaskCheckEndHandler;
 import com.englishaoe.lesson.taskcheck.TaskChecker;
 import com.englishaoe.lesson.utility.JsonUtil;
 import com.google.gson.Gson;
@@ -20,11 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
-    @Autowired
-    private TaskTypeService taskTypeService;
     @Autowired
     private AIServicesFactory aiServicesFactory;
     @Autowired
@@ -34,9 +32,7 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
     @Autowired
     private CustomerTaskService customerTaskService;
     @Autowired
-    private ExamService examService;
-    @Autowired
-    private TasksCheckingTransactionServices tasksCheckingTransactionServices;
+    private TaskCheckEndHandler taskCheckEndHandler;
     @Transactional
     @Async
     @Override
@@ -51,28 +47,13 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
             CheckDTO checkDTO = gson.fromJson(jsonResponseContent, CheckDTO.class);
             validateCheckDTO(checkDTO);
             taskResultService.saveTaskResult(resultCollect.collect(customerTaskDTO, checkDTO));
-            //update status
-            customerTaskService.updateCheckStatus(
-                    customerTaskDTO.getId(),
-                    CheckStatusEnum.COMPLETED.getStatus(),
-                    TaskResultTypeEnum.EXPRESS.getTaskResultType());
-            if (customerTaskDTO.getExamId() != null)
-                examService.accumulateTaskGradeForExam(checkDTO.getGrade(), customerTaskDTO.getExamId());
-            if (customerTaskDTO.getExamId() != null && customerTaskService.isAllCustomerTasksCheckedForExam(customerTaskDTO.getExamId()))
-                examService.updateExamCheckStatus(
-                        customerTaskDTO.getExamId(),
-                        CheckStatusEnum.COMPLETED.getStatus(),
-                        TaskResultTypeEnum.EXPRESS.getTaskResultType());
+
+            taskCheckEndHandler.completeChecking(customerTaskDTO, checkDTO);
+
             customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
         } catch (Exception e) {
-            //TODO save error massage
-            tasksCheckingTransactionServices.refund(
-                    customerTaskDTO.getCustomerId(),
-                    taskTypeService.getPriceByTaskType(customerTaskDTO.getTask().getTaskType()));
-            customerTaskService.updateCheckStatus(
-                    customerTaskDTO.getId(),
-                    CheckStatusEnum.INCOMPLETE.getStatus(),
-                    TaskResultTypeEnum.EXPRESS.getTaskResultType());
+            //TODO save error massage, add condition if getExamId == null then refound task else refound for exam
+            taskCheckEndHandler.failTaskCheck(customerTaskDTO);
         }
     }
     private void validateResponse(String response) {

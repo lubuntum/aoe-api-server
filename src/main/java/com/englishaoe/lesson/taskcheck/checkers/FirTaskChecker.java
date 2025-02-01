@@ -8,7 +8,9 @@ import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.TaskResultService;
 import com.englishaoe.lesson.dto.results.CheckDTO;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
+import com.englishaoe.lesson.services.transactions.PartnerRevenueTransactionalServices;
 import com.englishaoe.lesson.taskcheck.ResultCollect;
+import com.englishaoe.lesson.taskcheck.TaskCheckEndHandler;
 import com.englishaoe.lesson.taskcheck.TaskChecker;
 import com.englishaoe.lesson.utility.TextUtil;
 import com.englishaoe.lesson.textdistance.DistanceToGradeConverter;
@@ -30,31 +32,28 @@ public class FirTaskChecker implements TaskChecker {
     @Autowired
     CustomerTaskService customerTaskService;
     @Autowired
-    ExamService examService;
+    TaskCheckEndHandler taskCheckEndHandler;
     //compare transcribe text and original for distance
     @Transactional
     @Async
     @Override
     public void checkTask(CustomerTaskDTO customerTaskDTO) {
-        TextDistanceMethod textDistanceMethod = textDistanceFactoryMethod.getService(customerTaskDTO.getTextDistanceMethod());
-        double distance = textDistanceMethod
-                .compare(TextUtil.getClearText(customerTaskDTO.getTask().getTaskContentDTO().getTaskText().get(0))
-                        ,TextUtil.getClearText(customerTaskDTO.getTranscribateText()));
-        CheckDTO checkDTO = CheckDTO.createDefault();
-        checkDTO.setGrade(DistanceToGradeConverter.convert(distance));
-        taskResultService.saveTaskResult(resultCollect.collect(customerTaskDTO, checkDTO));
-        customerTaskService.updateCheckStatus(
-                customerTaskDTO.getId(),
-                CheckStatusEnum.COMPLETED.getStatus(),
-                TaskResultTypeEnum.EXPRESS.getTaskResultType());
-        if (customerTaskDTO.getExamId() != null)
-            examService.accumulateTaskGradeForExam(checkDTO.getGrade(), customerTaskDTO.getExamId());
-        if (customerTaskDTO.getExamId() != null && customerTaskService.isAllCustomerTasksCheckedForExam(customerTaskDTO.getExamId()))
-            examService.updateExamCheckStatus(
-                    customerTaskDTO.getExamId(),
-                    CheckStatusEnum.COMPLETED.getStatus(),
-                    TaskResultTypeEnum.EXPRESS.getTaskResultType());
-        customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
+        try {
+            TextDistanceMethod textDistanceMethod = textDistanceFactoryMethod.getService(customerTaskDTO.getTextDistanceMethod());
+            double distance = textDistanceMethod
+                    .compare(TextUtil.getClearText(customerTaskDTO.getTask().getTaskContentDTO().getTaskText().get(0))
+                            ,TextUtil.getClearText(customerTaskDTO.getTranscribateText()));
+            CheckDTO checkDTO = CheckDTO.createDefault();
+            checkDTO.setGrade(DistanceToGradeConverter.convert(distance));
+            taskResultService.saveTaskResult(resultCollect.collect(customerTaskDTO, checkDTO));
+
+            taskCheckEndHandler.completeChecking(customerTaskDTO, checkDTO);
+
+            customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
+        } catch (Exception e) {
+            taskCheckEndHandler.failTaskCheck(customerTaskDTO);
+        }
+
         //return resultCollect.collect(customerTaskDTO, checkDTO);
     }
 }
