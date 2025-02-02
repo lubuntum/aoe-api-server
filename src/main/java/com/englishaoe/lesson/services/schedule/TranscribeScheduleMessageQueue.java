@@ -8,6 +8,7 @@ import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
 import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
+import com.englishaoe.lesson.services.CustomerTaskDTOAssembleService;
 import com.englishaoe.lesson.services.transactions.TasksCheckingTransactionServices;
 import com.englishaoe.lesson.taskcheck.TaskCheckEndHandler;
 import com.google.gson.Gson;
@@ -26,16 +27,19 @@ public class TranscribeScheduleMessageQueue {
     private final TasksCheckingTransactionServices tasksCheckingTransactionServices;
     private final TaskTypeService taskTypeService;
     private final TaskCheckEndHandler taskCheckEndHandler;
+    public final CustomerTaskDTOAssembleService customerTaskDTOAssembleService;
     public TranscribeScheduleMessageQueue(CustomerTaskService customerTaskService,
                                           TranscribeFactory transcribeFactory,
                                           TasksCheckingTransactionServices tasksCheckingTransactionServices,
                                           TaskTypeService taskTypeService,
-                                          TaskCheckEndHandler taskCheckEndHandler){
+                                          TaskCheckEndHandler taskCheckEndHandler,
+                                          CustomerTaskDTOAssembleService customerTaskDTOAssembleService){
         this.customerTaskService = customerTaskService;
         this.transcribeFactory = transcribeFactory;
         this.tasksCheckingTransactionServices = tasksCheckingTransactionServices;
         this.taskTypeService = taskTypeService;
         this.taskCheckEndHandler = taskCheckEndHandler;
+        this.customerTaskDTOAssembleService = customerTaskDTOAssembleService;
         startTask();
     }
     public void startTask(){
@@ -48,40 +52,49 @@ public class TranscribeScheduleMessageQueue {
     public void performTask() {
         if (!semaphore.tryAcquire()) {
             System.out.print("Message skipped due to concurrency limit");
-        }
-        CustomerTask customerTask = customerTaskService.getOldestCustomerTaskByStatus(CheckStatusEnum.UNTRANSCRIBED.getStatus());
-        if(customerTask == null) return;
-        CustomerTaskDTO customerTaskDTO =
-                new Gson().fromJson(customerTask.getTempCheckingData(), CustomerTaskDTO.class);
-        if (customerTask.getAnswer() != null && !customerTask.getAnswer().trim().isBlank() && customerTask.getAnswer().length() >= 20) {
-            customerTaskService.updateCheckStatus(
-                    customerTask.getId(),
-                    CheckStatusEnum.TRANSCRIBED.getStatus(),
-                    TaskResultTypeEnum.EXPRESS.getTaskResultType());
             return;
         }
-        try{
-            APITranscribe apiTranscribe = transcribeFactory.getService(customerTaskDTO.getTranscriptionServiceName());
-            Gson gson = new Gson();
-            String transcribeAnswer = apiTranscribe.transcribe(customerTaskDTO.getAudioPath());
-            if (transcribeAnswer == null || transcribeAnswer.trim().isBlank() || transcribeAnswer.length() < 20) {
-                customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.INSUFFICIENT.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
+        CustomerTask customerTask = null;
+        CustomerTaskDTO customerTaskDTO = null;
+        try {
+            customerTask = customerTaskService.getOldestCustomerTaskByStatus(CheckStatusEnum.UNTRANSCRIBED.getStatus());
+            if(customerTask == null) return;
+
+            if(customerTask.getTempCheckingData() == null || customerTask.getTempCheckingData().isBlank()) {
+                customerTaskDTO = customerTaskDTOAssembleService.assemble(customerTask);
+            }
+            else customerTaskDTO =
+                    new Gson().fromJson(customerTask.getTempCheckingData(), CustomerTaskDTO.class);
+
+            if (customerTask.getAnswer() != null && !customerTask.getAnswer().trim().isBlank() && customerTask.getAnswer().length() >= 20) {
+                customerTaskService.updateCheckStatus(
+                        customerTask.getId(),
+                        CheckStatusEnum.TRANSCRIBED.getStatus(),
+                        TaskResultTypeEnum.EXPRESS.getTaskResultType());
                 return;
             }
-            customerTaskService.updateAnswerInCustomerTask(customerTaskDTO.getId(), transcribeAnswer);
+            try{
+                APITranscribe apiTranscribe = transcribeFactory.getService(customerTaskDTO.getTranscriptionServiceName());
+                Gson gson = new Gson();
+                String transcribeAnswer = apiTranscribe.transcribe(customerTaskDTO.getAudioPath());
+                if (transcribeAnswer == null || transcribeAnswer.trim().isBlank() || transcribeAnswer.length() < 20) {
+                    customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.INSUFFICIENT.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
+                    return;
+                }
+                customerTaskService.updateAnswerInCustomerTask(customerTaskDTO.getId(), transcribeAnswer);
 
-            customerTaskDTO.setTranscribateText(transcribeAnswer);
-            customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), gson.toJson(customerTaskDTO));
+                customerTaskDTO.setTranscribateText(transcribeAnswer);
+                customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), gson.toJson(customerTaskDTO));
 
-            customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.TRANSCRIBED.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
+                customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.TRANSCRIBED.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
+            } catch (Exception e) {
+                System.err.println("Error in perform task, during transcription : " + e.getMessage());
+                if (customerTaskDTO != null)
+                    taskCheckEndHandler.failTaskCheck(customerTaskDTO);
+            }
         } catch (Exception e) {
-            System.err.print(e.getMessage());
-            /*
-            tasksCheckingTransactionServices.refund(
-                    customerTaskDTO.getCustomerId(), taskTypeService.getPriceByTaskType(customerTaskDTO.getTask().getTaskType()));
-            customerTaskService.updateCheckStatus(customerTaskDTO.getId(), null, TaskResultTypeEnum.EXPRESS.getTaskResultType());
-             */
-            taskCheckEndHandler.failTaskCheck(customerTaskDTO);
+            System.err.println("Error in perform task (transcribe queue): " + e.getMessage());
+            if (customerTaskDTO != null) taskCheckEndHandler.failTaskCheck(customerTaskDTO);
         } finally {
             semaphore.release();
         }
