@@ -19,6 +19,7 @@ public class PartnerProposalDTO {
     private String email;
     private String name;
     private String secondName;
+    private String patronymic;
     private String registrationDate;
     private BigDecimal revenue;
     private String INN;

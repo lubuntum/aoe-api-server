@@ -14,7 +14,7 @@ import java.util.List;
 public interface PartnerRepository extends JpaRepository<Partner, Long> {
     @Query("SELECT new com.englishaoe.lesson.dto.partner.PartnerProposalDTO(" +
             "p.id, p.customerId, pT.type, p.partnerName, p.phoneNumber, p.isApproved, " +
-            "c.email, c.name, c.secondName, c.registrationDate, p.revenue, " +
+            "c.email, c.name, c.secondName, c.patronymic, c.registrationDate, p.revenue, " +
             "p.INN, p.KPP, p.BIK, p.RS) FROM Partner p " +
             "LEFT JOIN p.partnerType pT " +
             "LEFT JOIN p.customer c " +
@@ -22,7 +22,7 @@ public interface PartnerRepository extends JpaRepository<Partner, Long> {
     List<PartnerProposalDTO> findPartnersByApproving(Boolean isApproved);
     @Query("SELECT new com.englishaoe.lesson.dto.partner.PartnerProposalDTO(" +
             "p.id, p.customerId, pT.type, p.partnerName, p.phoneNumber, p.isApproved, " +
-            "c.email, c.name, c.secondName, c.registrationDate, p.revenue, " +
+            "c.email, c.name, c.secondName, c.patronymic, c.registrationDate, p.revenue, " +
             "p.INN, p.KPP, p.BIK, p.RS) FROM Partner p " +
             "LEFT JOIN p.partnerType pT " +
             "LEFT JOIN p.customer c")
