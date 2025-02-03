@@ -76,7 +76,6 @@ public class PartnerController {
                                                              @RequestParam("promocode") String promocode){
         return ResponseEntity.ok(partnershipService.applyPromocode(promocode, Long.valueOf(jwtUtil.extractSubject(token))));
     }
-    //TODO wrong need to find partner id by customerId
     @GetMapping
     public ResponseEntity<PartnerDTO> getPartnerData(@RequestHeader("Authorization")String token){
         if (!authorizationService.isCustomerHasProvidedRole(token, RoleEnum.PARTNER) &&

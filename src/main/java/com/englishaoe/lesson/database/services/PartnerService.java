@@ -4,6 +4,7 @@ import com.englishaoe.lesson.database.entity.partnership.Partner;
 import com.englishaoe.lesson.database.entity.partnership.PartnerType;
 import com.englishaoe.lesson.database.entity.partnership.PartnerTypeEnum;
 import com.englishaoe.lesson.database.repository.PartnerRepository;
+import com.englishaoe.lesson.database.repository.PartnershipRepository;
 import com.englishaoe.lesson.dto.partner.PartnerDTO;
 import com.englishaoe.lesson.dto.partner.PartnerDTOMapper;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTO;
@@ -25,6 +26,8 @@ public class PartnerService {
     PartnerTypeService partnerTypeService;
     @Autowired
     PromocodeUsageService promocodeUsageService;
+    @Autowired
+    PartnershipRepository partnershipRepository;
 
     public void createNotApprovedPartnerForCustomerAccount(Long customerId){
         Partner partner = new Partner();
@@ -97,6 +100,7 @@ public class PartnerService {
     public PartnerDTO getPartnerDTOByCustomerId(Long customerId) {
         PartnerDTO partnerDTO = partnerRepository.findPartnerDTOByCustomerId(customerId);
         partnerDTO.setPromocodeUsageCount(promocodeUsageService.getPromocodeUsageCountByPartnerId(partnerDTO.getId()));
+        partnerDTO.setPartnerships(partnershipRepository.findPartnershipsByPartnerId(partnerDTO.getId()));
         return partnerDTO;
     }
 }
