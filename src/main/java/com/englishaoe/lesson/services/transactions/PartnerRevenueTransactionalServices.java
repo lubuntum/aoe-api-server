@@ -2,6 +2,7 @@ package com.englishaoe.lesson.services.transactions;
 
 import com.englishaoe.lesson.database.entity.Customer;
 import com.englishaoe.lesson.database.entity.partnership.Partnership;
+import com.englishaoe.lesson.database.entity.partnership.PromocodeUsage;
 import com.englishaoe.lesson.database.services.CustomerServices;
 import com.englishaoe.lesson.database.services.PartnerService;
 import com.englishaoe.lesson.database.services.PartnershipService;
@@ -28,14 +29,16 @@ public class PartnerRevenueTransactionalServices {
         Customer currentCustomer = customerServices.getCustomerById(customerId);
         if (currentCustomer.getPromocodeUsageList() == null ||
                 currentCustomer.getPromocodeUsageList().isEmpty()) return;
-        PartnerDTO partnerDTO =
-                partnerService.getPartnerDTOById(currentCustomer.getPromocodeUsageList().get(0).getPartnerId());
-        Partnership partnership = partnershipService.getPartnershipByPartnerId(partnerDTO.getId());
+        PromocodeUsage promocodeUsage = currentCustomer.getPromocodeUsageList().get(0);
+        //TODO if promocodeUsage already has parthershipId not search for partner just use it
+        //PartnerDTO partnerDTO = partnerService.getPartnerDTOById(currentCustomer.getPromocodeUsageList().get(0).getPartnerId());
+        //Partnership partnership = partnershipService.getPartnershipByPartnerId(partnerDTO.getId());
+        Partnership partnership = partnershipService.getPartnershipById(promocodeUsage.getPartnershipId());
         BigDecimal price = (taskType != null) ? taskTypeService.getPriceByTaskType(taskType) : taskTypeService.getTotalPrice();
         BigDecimal partnerRate = BigDecimal.valueOf(partnership.getPartnerRate());
 
         BigDecimal revenueFromPrice = price.multiply(partnerRate);
-        partnerService.addAmountToPartnerRevenueById(partnerDTO.getId(), revenueFromPrice);
+        partnerService.addAmountToPartnerRevenueById(promocodeUsage.getPartnerId(), revenueFromPrice);
     }
 
 }

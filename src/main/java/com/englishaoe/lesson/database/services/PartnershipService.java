@@ -39,20 +39,22 @@ public class PartnershipService {
         partnerService.approvePartner(partner.getId());
     }
     public Boolean applyPromocode(String promocode, Long customerId){
-        Partner partner = partnershipRepository.findPartnerByPromocode(promocode);
-        if (partner == null) return false;
+        Partnership partnership = partnershipRepository.findPartnershipByPromocode(promocode);
+        if (partnership == null || partnership.getPartner() == null) return false;
         Customer customer = customerServices.getCustomerById(customerId);
         if (customer.getPromocodeUsageList() != null && customer.getPromocodeUsageList().size() > 0)
             customer.getPromocodeUsageList().clear();
         if (customer.getPromocodeUsageList() == null) customer.setPromocodeUsageList(new LinkedList<>());
         PromocodeUsage promocodeUsage = new PromocodeUsage();
-        promocodeUsage.setPartnerId(partner.getId());
+        promocodeUsage.setPartnerId(partnership.getPartner().getId());
         promocodeUsage.setCustomerId(customer.getId());
+        promocodeUsage.setPartnershipId(partnership.getId());
+        //add partnershipId to promocodeUsage (and in db scheme)
         customer.getPromocodeUsageList().add(promocodeUsage);
         customerServices.saveCustomer(customer);
         return true;
     }
-    public Partnership getPartnershipByPartnerId(Long partnerId) {
-        return partnershipRepository.findPartnershipByPartnerId(partnerId);
+    public Partnership getPartnershipById(Long id) {
+        return partnershipRepository.findById(id).orElseThrow(NullPointerException::new);
     }
 }
