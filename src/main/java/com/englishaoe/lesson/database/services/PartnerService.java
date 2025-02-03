@@ -5,6 +5,7 @@ import com.englishaoe.lesson.database.entity.partnership.PartnerType;
 import com.englishaoe.lesson.database.entity.partnership.PartnerTypeEnum;
 import com.englishaoe.lesson.database.repository.PartnerRepository;
 import com.englishaoe.lesson.database.repository.PartnershipRepository;
+import com.englishaoe.lesson.dto.account.CustomerRegistrationDTO;
 import com.englishaoe.lesson.dto.partner.PartnerDTO;
 import com.englishaoe.lesson.dto.partner.PartnerDTOMapper;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTO;
@@ -29,9 +30,10 @@ public class PartnerService {
     @Autowired
     PartnershipRepository partnershipRepository;
 
-    public void createNotApprovedPartnerForCustomerAccount(Long customerId){
+    public void createNotApprovedPartnerForCustomerAccount(CustomerRegistrationDTO accountData){
         Partner partner = new Partner();
-        partner.setCustomerId(customerId);
+        partner.setCustomerId(accountData.getCustomerId());
+        partner.setPhoneNumber(accountData.getPhoneNumber());
         partner.setPartnerTypeId(partnerTypeService.getPartnerTypeIdByType(PartnerTypeEnum.INDIVIDUAL.getType()));
         partner.setRevenue(new BigDecimal("0.0"));
         partner.setIsApproved(false);

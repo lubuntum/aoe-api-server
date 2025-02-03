@@ -10,6 +10,7 @@ public class CustomerRegistrationDTOMapper {
         customer.setSecondName(dto.getSecondName());
         customer.setPassword(dto.getPassword());
         customer.setRegistrationDate(dto.getRegistrationDate());
+        customer.setPatronymic(dto.getPatronymic());
         return customer;
     }
 }

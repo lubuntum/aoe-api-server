@@ -43,9 +43,9 @@ public class AuthController {
         if (customerServices.emailExists(customer.getEmail()))
             throw new RegularException("Email already exists", HttpStatus.CONFLICT.value());
         customer.setPassword(passValidationUtil.hashPassword(customer.getPassword()));
-        Customer savedCustomer = customerServices.saveCustomer(CustomerRegistrationDTOMapper.parse(customer));
-        if(customer.getIsPartnerProposal()) partnerService.createNotApprovedPartnerForCustomerAccount(savedCustomer.getId());
-        if (savedCustomer == null)
+        customer.setCustomerId(customerServices.saveCustomer(CustomerRegistrationDTOMapper.parse(customer)).getId());
+        if(customer.getIsPartnerProposal()) partnerService.createNotApprovedPartnerForCustomerAccount(customer);
+        if (customer.getCustomerId() == null)
             throw new RegularException("Unexpected error occurred while saving customer", HttpStatus.INTERNAL_SERVER_ERROR.value());
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration succeed");
     }
