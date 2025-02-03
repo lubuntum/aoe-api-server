@@ -13,6 +13,13 @@ public class PartnerDTOMapper {
                 partner.getKPP(),
                 partner.getBIK(),
                 partner.getRS(),
-                promocodeUsageCount);
+                promocodeUsageCount,
+                null);
+    }
+    public static Partner fromDTORevenueOnly (PartnerDTO dto) {
+        Partner partner = new Partner();
+        partner.setId(dto.getId());
+        partner.setRevenue(dto.getRevenue());
+        return partner;
     }
 }

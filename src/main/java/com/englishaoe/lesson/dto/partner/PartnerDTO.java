@@ -1,10 +1,13 @@
 package com.englishaoe.lesson.dto.partner;
 
+import com.englishaoe.lesson.database.entity.partnership.Partnership;
+import com.englishaoe.lesson.dto.partnership.PartnershipDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,4 +23,5 @@ public class PartnerDTO {
     private String BIK;
     private String RS;
     private Integer promocodeUsageCount;
+    private List<PartnershipDTO> partnerships;
 }
