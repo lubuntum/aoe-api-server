@@ -22,6 +22,8 @@ public class PromocodeUsage {
     private Long partnerId;
     @Column(name = "customer_id")
     private Long customerId;
+    @Column(name = "partnership_id")
+    private Long partnershipId;
 
     @ManyToOne()
     @JoinColumn(name = "partner_id", insertable = false, updatable = false)
