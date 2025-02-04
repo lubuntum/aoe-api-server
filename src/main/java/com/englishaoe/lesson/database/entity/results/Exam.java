@@ -41,5 +41,9 @@ public class Exam {
     @ManyToOne
     @JoinColumn(name = "expert_check_status_id", insertable = false, updatable = false)
     private CheckStatus expertCheckStatus;
+    @OneToMany
+    @JoinColumn(name = "exam_id", insertable = false, updatable = false)
+    private List<CustomerTask> customerTasks;
+
 
 }
