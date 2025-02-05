@@ -13,6 +13,7 @@ public class TaskResultService {
     @Autowired
     private TaskResultRepository taskResultRepository;
 
+    @Transactional
     public TaskResult saveTaskResult(TaskResult taskResult) {
         return taskResultRepository.save(taskResult);
     }

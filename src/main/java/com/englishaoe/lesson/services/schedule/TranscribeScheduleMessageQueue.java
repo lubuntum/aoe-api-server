@@ -6,11 +6,13 @@ import com.englishaoe.lesson.database.entity.results.CheckStatusEnum;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
+import com.englishaoe.lesson.database.services.TaskResultService;
 import com.englishaoe.lesson.database.services.TaskTypeService;
 import com.englishaoe.lesson.dto.results.CheckDTO;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
 import com.englishaoe.lesson.services.CustomerTaskDTOAssembleService;
 import com.englishaoe.lesson.services.transactions.TasksCheckingTransactionServices;
+import com.englishaoe.lesson.taskcheck.ResultCollect;
 import com.englishaoe.lesson.taskcheck.TaskCheckEndHandler;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Component;
@@ -29,18 +31,24 @@ public class TranscribeScheduleMessageQueue {
     private final TaskTypeService taskTypeService;
     private final TaskCheckEndHandler taskCheckEndHandler;
     public final CustomerTaskDTOAssembleService customerTaskDTOAssembleService;
+    public final ResultCollect resultCollect;
+    public final TaskResultService taskResultService;
     public TranscribeScheduleMessageQueue(CustomerTaskService customerTaskService,
                                           TranscribeFactory transcribeFactory,
                                           TasksCheckingTransactionServices tasksCheckingTransactionServices,
                                           TaskTypeService taskTypeService,
                                           TaskCheckEndHandler taskCheckEndHandler,
-                                          CustomerTaskDTOAssembleService customerTaskDTOAssembleService){
+                                          CustomerTaskDTOAssembleService customerTaskDTOAssembleService,
+                                          ResultCollect resultCollect,
+                                          TaskResultService taskResultService){
         this.customerTaskService = customerTaskService;
         this.transcribeFactory = transcribeFactory;
         this.tasksCheckingTransactionServices = tasksCheckingTransactionServices;
         this.taskTypeService = taskTypeService;
         this.taskCheckEndHandler = taskCheckEndHandler;
         this.customerTaskDTOAssembleService = customerTaskDTOAssembleService;
+        this.resultCollect = resultCollect;
+        this.taskResultService = taskResultService;
         startTask();
     }
     public void startTask(){
@@ -79,7 +87,9 @@ public class TranscribeScheduleMessageQueue {
                 Gson gson = new Gson();
                 String transcribeAnswer = apiTranscribe.transcribe(customerTaskDTO.getAudioPath());
                 if (transcribeAnswer == null || transcribeAnswer.trim().isBlank() || transcribeAnswer.length() < 20) {
-                    taskCheckEndHandler.completeChecking(customerTaskDTO, CheckDTO.createDefault());
+                    CheckDTO checkDTO = CheckDTO.createDefault();
+                    taskCheckEndHandler.completeChecking(customerTaskDTO, checkDTO);
+                    taskResultService.saveTaskResult(resultCollect.collect(customerTaskDTO, checkDTO));
                     //customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.INSUFFICIENT.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
                     return;
                 }
