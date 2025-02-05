@@ -42,6 +42,7 @@ public class TaskCheckEndHandler {
                 customerTaskDTO.getId(),
                 CheckStatusEnum.COMPLETED.getStatus(),
                 TaskResultTypeEnum.EXPRESS.getTaskResultType());
+        customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
         if (customerTaskDTO.getExamId() == null)
             partnerRevenueTransactionalServices
                     .addRevenueForPartnerByCustomer(

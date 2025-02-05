@@ -66,9 +66,12 @@ public class CheckTaskScheduleMessageQueue {
             //if exam was already canceled by some error, but this task was checked previously
             List<TaskResult> taskResults = taskResultService.getTaskResultByCustomerTaskId(customerTaskDTO.getId());
             if (taskResults != null && !taskResults.isEmpty()){
-                CheckDTO checkDTO = new Gson().fromJson(taskResults.get(0).getResult(), CheckDTO.class);
-                taskCheckEndHandler.completeChecking(customerTaskDTO, checkDTO);
-                return;
+                for(TaskResult taskResult: taskResults)
+                    taskResultService.deleteTaskResult(taskResult);
+                //Uncomment if return optimization and remove for
+                //CheckDTO checkDTO = new Gson().fromJson(taskResults.get(0).getResult(), CheckDTO.class);
+                //taskCheckEndHandler.completeChecking(customerTaskDTO, checkDTO);
+                //return;
             }
 
                 customerTaskService.updateCheckStatus(

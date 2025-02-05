@@ -74,13 +74,14 @@ public class CustomerTaskService {
         return customerTaskRepository.findOldestCustomerTaskWithStatus(status);
     }
     /**
-     * Check if examen is completed (all his tasks must be also completed)
+     * Check if examen is completed (all his tasks must be also completed or insufficient)
+     * completed if task was transcribed and checked successfully (count even if one or more tasks was speechless)
      * */
     public boolean isAllCustomerTasksCheckedForExam(Long examId) {
-        CheckStatus checkStatus = checkStatusRepository.findByStatus(CheckStatusEnum.COMPLETED.getStatus());
-        if (checkStatus == null) throw new RuntimeException("Status " + CheckStatusEnum.COMPLETED.getStatus() + " not found");
+        CheckStatus checkCompletedStatus = checkStatusRepository.findByStatus(CheckStatusEnum.COMPLETED.getStatus());
+        if (checkCompletedStatus == null) throw new RuntimeException("Status " + CheckStatusEnum.COMPLETED.getStatus() + " not found");
         Long totalTasks = customerTaskRepository.countByExamId(examId);
-        Long completedTasks = customerTaskRepository.countByExamIdAndCheckStatusId(examId, checkStatus.getId());
+        Long completedTasks = customerTaskRepository.countByExamIdAndCheckStatusId(examId, checkCompletedStatus.getId());
         return Objects.equals(totalTasks, completedTasks);
     }
     public List<CustomerTask> getCustomerTasksByExamIdAndStatus(Long examId, CheckStatusEnum checkStatusEnum) {

@@ -107,6 +107,7 @@ public class ResultController {
                 examId,
                 CheckStatusEnum.CHECKING.getStatus(),
                 TaskResultTypeEnum.EXPRESS.getTaskResultType());
+        examService.updateExpressGrade(examId, null);
         prepareExamCustomerTaskService.prepareCustomerTasks(examId);
         //get 4 tasks by exam Id
         return ResponseEntity.ok("Exam set to checking");

@@ -9,6 +9,7 @@ import com.englishaoe.lesson.utility.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,6 +26,7 @@ public class ExamService {
         return examRepository.findById(id).orElseThrow(
                 ()-> new RegularException("Exam not found", HttpStatus.FORBIDDEN.value()));
     }
+    @Transactional
     public void updateExpressGrade(Long id, Integer expressTotalGrade){
         examRepository.updateExamExpressTotalGrade(id, expressTotalGrade);
     }
@@ -59,12 +61,7 @@ public class ExamService {
             exam.setExpressCheckStatusId(checkStatusId);
         else
             exam.setExpertCheckStatusId(checkStatusId);
-        if (checkType.equals(TaskResultTypeEnum.EXPRESS.getTaskResultType()) &&
-                statusName.equals(CheckStatusEnum.COMPLETED.getStatus()))
-            exam.setExpressSendDate(DateUtil.getCurrentDate());
-        if (checkType.equals(TaskResultTypeEnum.EXPERT.getTaskResultType()) &&
-                statusName.equals(CheckStatusEnum.COMPLETED.getStatus()))
-            exam.setExpertSendDate(DateUtil.getCurrentDate());
+
         examRepository.save(exam);
     }
 }

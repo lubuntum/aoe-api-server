@@ -7,6 +7,7 @@ import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.TaskResultTypeEnum;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
 import com.englishaoe.lesson.database.services.TaskTypeService;
+import com.englishaoe.lesson.dto.results.CheckDTO;
 import com.englishaoe.lesson.dto.results.CustomerTaskDTO;
 import com.englishaoe.lesson.services.CustomerTaskDTOAssembleService;
 import com.englishaoe.lesson.services.transactions.TasksCheckingTransactionServices;
@@ -78,7 +79,8 @@ public class TranscribeScheduleMessageQueue {
                 Gson gson = new Gson();
                 String transcribeAnswer = apiTranscribe.transcribe(customerTaskDTO.getAudioPath());
                 if (transcribeAnswer == null || transcribeAnswer.trim().isBlank() || transcribeAnswer.length() < 20) {
-                    customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.INSUFFICIENT.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
+                    taskCheckEndHandler.completeChecking(customerTaskDTO, CheckDTO.createDefault());
+                    //customerTaskService.updateCheckStatus(customerTask.getId(), CheckStatusEnum.INSUFFICIENT.getStatus(), TaskResultTypeEnum.EXPRESS.getTaskResultType());
                     return;
                 }
                 customerTaskService.updateAnswerInCustomerTask(customerTaskDTO.getId(), transcribeAnswer);

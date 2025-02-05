@@ -50,7 +50,7 @@ public abstract class BaseAITaskChecker implements TaskChecker, PromptBuilder {
 
             taskCheckEndHandler.completeChecking(customerTaskDTO, checkDTO);
 
-            customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
+            //customerTaskService.updateTempCheckingData(customerTaskDTO.getId(), null);
         } catch (Exception e) {
             //TODO save error massage, add condition if getExamId == null then refound task else refound for exam
             taskCheckEndHandler.failTaskCheck(customerTaskDTO);
