@@ -3,6 +3,7 @@ package com.englishaoe.lesson.controllers;
 import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.Exam;
 import com.englishaoe.lesson.database.entity.variants.Task;
+import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
 import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.VariantService;
@@ -47,6 +48,11 @@ public class LessonController {
         List<TaskDTO> taskList = variantService.getTasksByVariantId(id);
         return ResponseEntity.ok(taskList);
     }
+    @GetMapping("/variant/{id}")
+    public ResponseEntity<Variant> getVariant(@PathVariable("id") Long id){
+        Variant variant = variantService.getVariantById(id);
+        return ResponseEntity.ok(variant);
+    }
     /** Get specific task by id*/
     @GetMapping("/task/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable("id") Long id) {
@@ -86,5 +92,15 @@ public class LessonController {
         customerTask.setAnswer(null);
         CustomerTask result = customerTaskService.saveCustomerTask(customerTask);
         return ResponseEntity.ok(result);
+    }
+    @PostMapping("/change-exam-status")
+    public ResponseEntity<String> changeExamStatus(@RequestHeader("Authorization") String token,
+                                                   @RequestParam("examId")Long examId,
+                                                   @RequestParam("statusName") String statusName,
+                                                   @RequestParam("checkType") String checkType){
+        jwtUtil.extractSubject(token);
+        if (customerTaskService.isAllCustomerTasksCheckedForExam(examId))
+            examService.updateExamCheckStatus(examId, statusName, checkType);
+        return ResponseEntity.ok("Changed to " + statusName);
     }
 }
