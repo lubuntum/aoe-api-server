@@ -16,10 +16,5 @@ public class PartnerDTOMapper {
                 promocodeUsageCount,
                 null);
     }
-    public static Partner fromDTORevenueOnly (PartnerDTO dto) {
-        Partner partner = new Partner();
-        partner.setId(dto.getId());
-        partner.setRevenue(dto.getRevenue());
-        return partner;
-    }
+
 }

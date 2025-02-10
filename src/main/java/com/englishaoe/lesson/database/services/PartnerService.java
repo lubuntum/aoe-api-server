@@ -6,6 +6,7 @@ import com.englishaoe.lesson.database.entity.partnership.PartnerTypeEnum;
 import com.englishaoe.lesson.database.repository.PartnerRepository;
 import com.englishaoe.lesson.database.repository.PartnershipRepository;
 import com.englishaoe.lesson.dto.account.CustomerRegistrationDTO;
+import com.englishaoe.lesson.dto.partner.PartnerAccountDTO;
 import com.englishaoe.lesson.dto.partner.PartnerDTO;
 import com.englishaoe.lesson.dto.partner.PartnerDTOMapper;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTO;
@@ -82,27 +83,35 @@ public class PartnerService {
         Integer promocodeUsageCount = promocodeUsageService.getPromocodeUsageCountByPartnerId(partnerId);
         return PartnerDTOMapper.toDTO(partner, promocodeUsageCount);
     }
-    public PartnerDTO updatePartnerData(PartnerDTO partnerDTO) {
+    public boolean updatePartnerData(PartnerAccountDTO partnerAccountDTO) {
         //TODO get DTO class instead not partner
-        Partner partner = partnerRepository.findById(partnerDTO.getId()).orElseThrow(
+        Partner partner = partnerRepository.findById(partnerAccountDTO.getId()).orElseThrow(
                 ()-> new RegularException("Partner not found", HttpStatus.FAILED_DEPENDENCY.value()));
-        Long partnerTypeId = partnerTypeService.getPartnerTypeIdByType(partnerDTO.getType());
+        Long partnerTypeId = partnerTypeService.getPartnerTypeIdByType(partnerAccountDTO.getType());
         if (partnerTypeId == null)
             throw new RegularException("Partner type not found", HttpStatus.FORBIDDEN.value());
         partner.setPartnerTypeId(partnerTypeId);
-        partner.setPartnerName(partnerDTO.getPartnerName());
-        partner.setPhoneNumber(partnerDTO.getPartnerNumber());
-        partner.setINN(partnerDTO.getINN());
-        partner.setKPP(partnerDTO.getKPP());
-        partner.setBIK(partnerDTO.getBIK());
-        partner.setRS(partnerDTO.getRS());
-        return PartnerDTOMapper.toDTO(partnerRepository.save(partner),
-                promocodeUsageService.getPromocodeUsageCountByPartnerId(partnerDTO.getId()));
+        partner.setPartnerName(partnerAccountDTO.getPartnerName());
+        partner.setPhoneNumber(partnerAccountDTO.getPartnerNumber());
+        partner.setINN(partnerAccountDTO.getINN());
+        partner.setKPP(partnerAccountDTO.getKPP());
+        partner.setBIK(partnerAccountDTO.getBIK());
+        partner.setRS(partnerAccountDTO.getRS());
+        partnerRepository.save(partner);
+        return true;
     }
     public PartnerDTO getPartnerDTOByCustomerId(Long customerId) {
         PartnerDTO partnerDTO = partnerRepository.findPartnerDTOByCustomerId(customerId);
         partnerDTO.setPromocodeUsageCount(promocodeUsageService.getPromocodeUsageCountByPartnerId(partnerDTO.getId()));
         partnerDTO.setPartnerships(partnershipRepository.findPartnershipsByPartnerId(partnerDTO.getId()));
         return partnerDTO;
+    }
+    public PartnerAccountDTO getPartnerAccountDTOByCustomerId(Long customerId) {
+        PartnerAccountDTO partnerAccountDTO = partnerRepository.findPartnerAccountDTOByCustomerId(customerId);
+        partnerAccountDTO.setPromocodeUsageCount(promocodeUsageService
+                .getPromocodeUsageCountByPartnerId(partnerAccountDTO.getId()));
+        partnerAccountDTO.setPartnerships(partnershipRepository
+                .findPartnershipsByPartnerId(partnerAccountDTO.getId()));
+        return partnerAccountDTO;
     }
 }

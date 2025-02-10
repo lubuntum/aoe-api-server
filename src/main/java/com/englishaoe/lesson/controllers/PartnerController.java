@@ -6,6 +6,7 @@ import com.englishaoe.lesson.database.entity.role.RoleEnum;
 import com.englishaoe.lesson.database.services.PartnerService;
 import com.englishaoe.lesson.database.services.PartnerTypeService;
 import com.englishaoe.lesson.database.services.PartnershipService;
+import com.englishaoe.lesson.dto.partner.PartnerAccountDTO;
 import com.englishaoe.lesson.dto.partner.PartnerDTO;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTO;
 import com.englishaoe.lesson.dto.partner.PartnerProposalDTOMapper;
@@ -77,11 +78,11 @@ public class PartnerController {
         return ResponseEntity.ok(partnershipService.applyPromocode(promocode, Long.valueOf(jwtUtil.extractSubject(token))));
     }
     @GetMapping
-    public ResponseEntity<PartnerDTO> getPartnerData(@RequestHeader("Authorization")String token){
+    public ResponseEntity<PartnerAccountDTO> getPartnerData(@RequestHeader("Authorization")String token){
         if (!authorizationService.isCustomerHasProvidedRole(token, RoleEnum.PARTNER) &&
                 !authorizationService.isCustomerHasProvidedRole(token, RoleEnum.ADMIN))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
-        return ResponseEntity.ok(partnerService.getPartnerDTOByCustomerId(Long.valueOf(jwtUtil.extractSubject(token))));
+        return ResponseEntity.ok(partnerService.getPartnerAccountDTOByCustomerId(Long.valueOf(jwtUtil.extractSubject(token))));
     }
     @GetMapping("/types")
     public ResponseEntity<List<PartnerType>> getPartnerTypes(@RequestHeader("Authorization")String token){
@@ -89,11 +90,11 @@ public class PartnerController {
         return ResponseEntity.ok(partnerTypeService.getAllPartnerTypes());
     }
     @PostMapping("/update")
-    public ResponseEntity<PartnerDTO> updatePartnerData(@RequestHeader("Authorization")String token,
-                                                        @RequestBody PartnerDTO partnerDTO) {
+    public ResponseEntity<Boolean> updatePartnerData(@RequestHeader("Authorization")String token,
+                                                        @RequestBody PartnerAccountDTO PartnerAccountDTO) {
         if (!authorizationService.isCustomerHasProvidedRole(token, RoleEnum.PARTNER) &&
             !authorizationService.isCustomerHasProvidedRole(token, RoleEnum.ADMIN))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
-        return ResponseEntity.ok(partnerService.updatePartnerData(partnerDTO));
+        return ResponseEntity.ok(partnerService.updatePartnerData(PartnerAccountDTO));
     }
 }
