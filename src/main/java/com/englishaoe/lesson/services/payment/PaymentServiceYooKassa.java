@@ -1,6 +1,8 @@
 package com.englishaoe.lesson.services.payment;
 
+import com.englishaoe.lesson.database.entity.Customer;
 import com.englishaoe.lesson.database.entity.transactions.Payment;
+import com.englishaoe.lesson.database.services.CustomerServices;
 import com.englishaoe.lesson.database.services.PaymentService;
 import com.englishaoe.lesson.dto.payment.PaymentDTO;
 import com.englishaoe.lesson.dto.payment.PaymentMapper;
@@ -23,7 +25,8 @@ import java.util.UUID;
 public class PaymentServiceYooKassa {
     @Autowired
     private PaymentService paymentService;
-
+    @Autowired
+    private CustomerServices customerServices;
     @Value("${YOOKASSA_SHOP_ID}")
     private String shopId;
     @Value("${YOOKASSA_API_KEY}")
@@ -36,9 +39,21 @@ public class PaymentServiceYooKassa {
     public String createPayment(PaymentRequest paymentRequest, Long customerId){
 
         try{
+            Customer customer = customerServices.getCustomerById(customerId);
+            Long paymentId = paymentService.createDefaultPayment(paymentRequest, customerId);
+            String receipt = String.format(
+                    "{\"items\": [{\"description\": \"%s\", \"quantity\": %d, \"amount\": {\"value\": \"%.2f\", \"currency\": \"%s\"}, " +
+                            "\"vat_code\": 1, \"payment_subject\": \"commodity\", \"payment_mode\": \"full_payment\"}], " +
+                            "\"customer\": {\"email\": \"%s\"}}",
+                    String.format("Order number %d", paymentId), // Assuming you have a description in PaymentRequest
+                    1, // Assuming you have a quantity in PaymentRequest
+                    paymentRequest.getAmount(),
+                    paymentRequest.getCurrency(),
+                    customer.getEmail()
+            );
             String requestBody = String.format(
-                    "{\"amount\": {\"value\": \"%s\", \"currency\": \"%s\"}, \"confirmation\": {\"type\": \"redirect\", \"return_url\": \"%s\"}, \"capture\": true}",
-                    paymentRequest.getAmount(), paymentRequest.getCurrency(), backUrl);
+                    "{\"amount\": {\"value\": \"%s\", \"currency\": \"%s\"}, \"confirmation\": {\"type\": \"redirect\", \"return_url\": \"%s\"}, \"capture\": true, \"receipt\":%s}",
+                    paymentRequest.getAmount(), paymentRequest.getCurrency(), backUrl, receipt);
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = createHttpRequest(requestBody);
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -46,6 +61,7 @@ public class PaymentServiceYooKassa {
                 throw new RuntimeException("Failed to create payment: " + response.body());
             }
             Payment payment = parseResponse(response.body());
+            payment.setId(paymentId);
             payment.setCustomerId(customerId);
             paymentService.save(payment);
             return response.body();

@@ -9,6 +9,6 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentRequest {
-    private String amount;
+    private Double amount;
     private String currency;
 }
