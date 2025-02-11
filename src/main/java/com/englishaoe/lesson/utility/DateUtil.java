@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 
 public class DateUtil {
@@ -12,6 +13,16 @@ public class DateUtil {
     public static String getCurrentDate() {
         LocalDate localDate = LocalDate.now();
         return formatter.format(localDate);
+    }
+    public static Boolean isDateExpired(String date) {
+        try {
+            LocalDate expireDate = LocalDate.parse(date, formatter);
+            LocalDate currentDate = LocalDate.now();
+            return expireDate.isAfter(currentDate);
+        } catch (DateTimeParseException e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
     }
     public static String getExpireDate(int months){
         LocalDate localDate = LocalDate.now();

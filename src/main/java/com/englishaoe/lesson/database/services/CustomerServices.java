@@ -23,6 +23,12 @@ public class CustomerServices {
     private CustomerRepository customerRepository;
     @Autowired
     private RoleService roleService;
+    public Boolean isCustomerSubscribed(Long customerId) {
+        Customer customer = customerRepository.findById(customerId).orElseThrow(
+                ()-> new RegularException("Cant find user with provided id", HttpStatus.FORBIDDEN.value()));
+        if (customer.getExpireSubDate() == null) return false;
+        return DateUtil.isDateExpired(customer.getExpireSubDate());
+    }
     public Customer getCustomerById(Long id){
         return customerRepository.findById(id).orElseThrow(
                 ()->new RegularException("User not found", HttpStatus.FORBIDDEN.value()));

@@ -4,6 +4,7 @@ import com.englishaoe.lesson.database.entity.results.CustomerTask;
 import com.englishaoe.lesson.database.entity.results.Exam;
 import com.englishaoe.lesson.database.entity.variants.Task;
 import com.englishaoe.lesson.database.entity.variants.Variant;
+import com.englishaoe.lesson.database.services.CustomerServices;
 import com.englishaoe.lesson.database.services.CustomerTaskService;
 import com.englishaoe.lesson.database.services.ExamService;
 import com.englishaoe.lesson.database.services.VariantService;
@@ -34,6 +35,8 @@ public class LessonController {
     @Autowired
     CustomerTaskService customerTaskService;
     @Autowired
+    CustomerServices customerServices;
+    @Autowired
     JwtUtil jwtUtil;
     @Value("${audio.folderDir}")
     private String audioFolderPath;
@@ -41,6 +44,19 @@ public class LessonController {
     @GetMapping("/variants")
     public ResponseEntity<List<VariantDTO>> getVisibleVariants() throws SQLException {
         return ResponseEntity.ok(variantService.getVisibleVariantsDTO());
+    }
+    //TODO check if user not auth then return just 3
+    // if auth but not sub return 5, if has save then return all
+    @GetMapping("/variants-available")
+    public ResponseEntity<List<VariantDTO>> getAvailableVariants(@RequestHeader("Authorization")String token) {
+        if (token.equals("unAuth")) return ResponseEntity.ok(variantService.getAvailableVariantsDTO(3));
+        try{
+            if (!customerServices.isCustomerSubscribed(Long.valueOf(jwtUtil.extractSubject(token))))
+                return ResponseEntity.ok(variantService.getAvailableVariantsDTO(5));
+            return ResponseEntity.ok(variantService.getVisibleVariantsDTO());
+        } catch (Exception e) {
+            return ResponseEntity.ok(variantService.getAvailableVariantsDTO(3));
+        }
     }
     /** Get variant's tasks by id, better call endpoint like getTasksByVariantId*/
     @GetMapping("/variant/{id}/tasks")

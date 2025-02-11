@@ -11,6 +11,8 @@ import com.englishaoe.lesson.dto.lesson.variant.VariantMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,10 @@ public class VariantService {
     private TaskTypeRepository taskTypeRepository;
     @Autowired
     private VariantMapper variantMapper;
+    public List<VariantDTO> getAvailableVariantsDTO(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return variantRepository.findAllVariantsAvailable(pageable, true);
+    }
 
     public List<VariantDTO> getAllVariantsDTO(){
         return variantRepository.findAllVariantsThemesData();
