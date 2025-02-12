@@ -29,6 +29,9 @@ public class VariantService {
     private TaskTypeRepository taskTypeRepository;
     @Autowired
     private VariantMapper variantMapper;
+    public Integer getVisibleVariantsCount(){
+        return variantRepository.countVisibleVariants();
+    }
     public List<VariantDTO> getAvailableVariantsDTO(int limit) {
         Pageable pageable = PageRequest.of(0, limit);
         return variantRepository.findAllVariantsAvailable(pageable, true);

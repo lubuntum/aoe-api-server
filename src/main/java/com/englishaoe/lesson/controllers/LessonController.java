@@ -45,8 +45,10 @@ public class LessonController {
     public ResponseEntity<List<VariantDTO>> getVisibleVariants() throws SQLException {
         return ResponseEntity.ok(variantService.getVisibleVariantsDTO());
     }
-    //TODO check if user not auth then return just 3
-    // if auth but not sub return 5, if has save then return all
+    @GetMapping("/variants-available-count")
+    public ResponseEntity<Integer> getVisibleVariantsCount() {
+        return ResponseEntity.ok(variantService.getVisibleVariantsCount());
+    }
     @GetMapping("/variants-available")
     public ResponseEntity<List<VariantDTO>> getAvailableVariants(@RequestHeader("Authorization")String token) {
         if (token.equals("unAuth")) return ResponseEntity.ok(variantService.getAvailableVariantsDTO(3));
