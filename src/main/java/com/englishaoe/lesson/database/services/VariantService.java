@@ -1,5 +1,6 @@
 package com.englishaoe.lesson.database.services;
 
+import com.englishaoe.lesson.database.entity.results.Exam;
 import com.englishaoe.lesson.database.entity.variants.Task;
 import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.repository.TaskRepository;
@@ -67,6 +68,7 @@ public class VariantService {
     public Variant saveVariant(Variant variant) {
         return variantRepository.save(variant);
     }
+    @Transactional
     public void deleteVariantById(Long variantId) {
         variantRepository.deleteById(variantId);
     }

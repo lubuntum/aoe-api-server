@@ -109,7 +109,12 @@ public class AdminController {
                                                 @PathVariable("variantId") Long variantId){
         if (!authorizationService.isCustomerAdmin(token))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
-        variantService.deleteVariantById(variantId);
+        try{
+            variantService.deleteVariantById(variantId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body("Variant deleted");
     }
     /**
