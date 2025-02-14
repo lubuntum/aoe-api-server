@@ -17,6 +17,7 @@ import com.englishaoe.lesson.utility.file.FileUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,15 @@ public class LessonController {
     @GetMapping("/variants-available-count")
     public ResponseEntity<Integer> getVisibleVariantsCount() {
         return ResponseEntity.ok(variantService.getVisibleVariantsCount());
+    }
+    @GetMapping("/variants-pageable")
+    public ResponseEntity<Page<VariantDTO>> getVariantsByPage(@RequestParam(defaultValue = "0") int pageNumber,
+                                                           @RequestParam(defaultValue = "9") int size){
+        try {
+            return ResponseEntity.ok(variantService.getVariantsByPage(pageNumber, size));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
     @GetMapping("/variants-available")
     public ResponseEntity<List<VariantDTO>> getAvailableVariants(@RequestHeader("Authorization")String token) {

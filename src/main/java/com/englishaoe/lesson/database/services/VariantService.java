@@ -1,6 +1,5 @@
 package com.englishaoe.lesson.database.services;
 
-import com.englishaoe.lesson.database.entity.results.Exam;
 import com.englishaoe.lesson.database.entity.variants.Task;
 import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.repository.TaskRepository;
@@ -12,6 +11,7 @@ import com.englishaoe.lesson.dto.lesson.variant.VariantMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +43,10 @@ public class VariantService {
     };
     public List<VariantDTO> getVisibleVariantsDTO(){
         return variantRepository.findVisibleVariants();
+    }
+    public Page<VariantDTO> getVariantsByPage(int pageNumber, int size) {
+        Pageable pageable = PageRequest.of(pageNumber, size);
+        return variantRepository.findVariantsAvailableByPage(pageable, true);
     }
     public VariantDTO updateVariantVisibility(Long variantId, Boolean visibility){
         Variant variant = variantRepository.findById(variantId).orElseThrow();
