@@ -11,6 +11,7 @@ public class CustomerRegistrationDTOMapper {
         customer.setPassword(dto.getPassword());
         customer.setRegistrationDate(dto.getRegistrationDate());
         customer.setPatronymic(dto.getPatronymic());
+        customer.setIsConfirmed(false);
         return customer;
     }
 }
