@@ -11,16 +11,20 @@ import com.englishaoe.lesson.dto.account.CustomerRegistrationDTOMapper;
 import com.englishaoe.lesson.dto.authorization.CustomerAuthDTO;
 import com.englishaoe.lesson.dto.authorization.LoginResponseDTO;
 import com.englishaoe.lesson.exceptions.RegularException;
+import com.englishaoe.lesson.services.email.EmailService;
 import com.englishaoe.lesson.utility.JwtUtil;
 import com.englishaoe.lesson.utility.PassValidationUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 @RestController
@@ -36,8 +40,10 @@ public class AuthController {
     private CustomerServices customerServices;
     @Autowired
     private PartnerService partnerService;
+    @Autowired
+    private EmailService emailService;
     @PostMapping("/registration")
-    public ResponseEntity<String> register(@RequestBody CustomerRegistrationDTO customer){
+    public ResponseEntity<String> register(@RequestBody CustomerRegistrationDTO customer) throws IOException, MessagingException {
         if (customer == null)
             throw new RegularException("No customer data provided", HttpStatus.BAD_REQUEST.value());
         if (customerServices.emailExists(customer.getEmail()))
@@ -47,6 +53,10 @@ public class AuthController {
         if(customer.getIsPartnerProposal()) partnerService.createNotApprovedPartnerForCustomerAccount(customer);
         if (customer.getCustomerId() == null)
             throw new RegularException("Unexpected error occurred while saving customer", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        emailService.sendPageRegistrationMessage(
+                customer.getEmail(),
+                "Please Confirm Your Email Address",
+                emailService.assemblyEmailRegistrationText(customer.getName(), jwtUtil.generateToken(String.valueOf(customer.getCustomerId()))));
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration succeed");
     }
     @PostMapping("/login")
@@ -55,6 +65,8 @@ public class AuthController {
         if (customerCredential == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         if (!passValidationUtil.validatePassword(customerAuthDTO.getPassword(), customerCredential.getPassword()))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (!customerServices.isCustomerEmailConfirmed(customerAuthDTO.getEmail()))
+            throw new RegularException("Please confirm your email", HttpStatus.FORBIDDEN.value());
         return ResponseEntity.ok(new LoginResponseDTO(jwtUtil.generateToken(String.valueOf(customerCredential.getId()))));
     }
     @GetMapping("/validate")
