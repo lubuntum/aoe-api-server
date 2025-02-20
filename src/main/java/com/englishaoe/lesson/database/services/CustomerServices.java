@@ -23,6 +23,17 @@ public class CustomerServices {
     private CustomerRepository customerRepository;
     @Autowired
     private RoleService roleService;
+    public Boolean confirmCustomerEmail(Long customerId){
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(()-> new RegularException("User doesn't exist", HttpStatus.FORBIDDEN.value()));
+        if (customer.getIsConfirmed()) return true;
+        customer.setIsConfirmed(true);
+        customerRepository.save(customer);
+        return true;
+    }
+    public Boolean isCustomerEmailConfirmed(String email) {
+        return customerRepository.findIsConfirmedByEmail(email);
+    }
     public Boolean isCustomerSubscribed(Long customerId) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(
                 ()-> new RegularException("Cant find user with provided id", HttpStatus.FORBIDDEN.value()));
