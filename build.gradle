@@ -24,6 +24,9 @@ repositories {
 }
 
 dependencies {
+	//Mail sending service
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 	//Gson parsing
 	implementation 'com.google.code.gson:gson:2.7'
 	//for some text comparison methods
