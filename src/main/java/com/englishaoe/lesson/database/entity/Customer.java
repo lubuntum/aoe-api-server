@@ -41,7 +41,8 @@ public class Customer {
     private String expireSubDate;
     @Column(name = "patronymic")
     private String patronymic;
-
+    @Column(name = "is_confirmed")
+    private Boolean isConfirmed;
     @ManyToMany
     @JoinTable(
             name = "customer_role",
