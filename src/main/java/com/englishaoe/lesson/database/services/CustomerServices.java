@@ -9,6 +9,7 @@ import com.englishaoe.lesson.dto.account.CustomerHeaderDTO;
 import com.englishaoe.lesson.dto.authorization.CustomerAuthDTO;
 import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.utility.DateUtil;
+import com.englishaoe.lesson.utility.PassValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,16 @@ public class CustomerServices {
     private CustomerRepository customerRepository;
     @Autowired
     private RoleService roleService;
+
+    public String getCustomerNameById(Long customerId) {
+        return customerRepository.findNameById(customerId);
+    }
+    public void resetPassword(Long customerId, String password) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(()->new RegularException("user doesn't exist", HttpStatus.FORBIDDEN.value()));
+        customer.setPassword(PassValidationUtil.hashPassword(password));
+        customerRepository.save(customer);
+    }
     public Boolean confirmCustomerEmail(Long customerId){
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(()-> new RegularException("User doesn't exist", HttpStatus.FORBIDDEN.value()));

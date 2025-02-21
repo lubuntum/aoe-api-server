@@ -6,13 +6,12 @@ import org.springframework.stereotype.Component;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-@Component
 public class PassValidationUtil {
-    public boolean validatePassword(String password, String hash) {
+    public static boolean validatePassword(String password, String hash) {
         String hashedPassword = hashPassword(password);
         return hashedPassword.equals(hash);
     }
-    public String hashPassword(String password) {
+    public static String hashPassword(String password) {
         try{
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(password.getBytes());

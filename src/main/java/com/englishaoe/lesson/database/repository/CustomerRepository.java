@@ -35,6 +35,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Customer findByEmail(String email);
     @Query("SELECT c.id from Customer c WHERE c.email = :email")
     Long findCustomerIdByEmail(String email);
+    String findNameById(Long id);
     @Query("SELECT c.currentBalance from Customer c WHERE c.id = :customerId")
     BigDecimal findCurrentBalanceById(Long customerId);
     @Query("SELECT c.isConfirmed from Customer c WHERE c.email = :email")

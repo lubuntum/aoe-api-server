@@ -1,6 +1,8 @@
 package com.englishaoe.lesson.controllers;
 
+import com.englishaoe.lesson.database.entity.Customer;
 import com.englishaoe.lesson.database.services.CustomerServices;
+import com.englishaoe.lesson.dto.authorization.CustomerAuthDTO;
 import com.englishaoe.lesson.dto.email.EmailRequest;
 import com.englishaoe.lesson.services.email.EmailService;
 import com.englishaoe.lesson.utility.JwtUtil;
@@ -8,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.SignatureException;
 
 @RestController
 @RequestMapping("/api/email")
@@ -26,7 +26,7 @@ public class EmailController {
     @PostMapping("/send")
     public ResponseEntity<String> sendEmail(@RequestBody EmailRequest emailRequest) {
         try {
-            emailService.sendRegistrationMessage(
+            emailService.sendMessage(
                     emailRequest.getTo(),
                     emailRequest.getSubject(),
                     emailRequest.getText());
@@ -44,6 +44,25 @@ public class EmailController {
             return ResponseEntity.ok(customerServices.confirmCustomerEmail(Long.valueOf(jwtUtil.extractSubject(token))));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPasswordByEmail(@RequestBody CustomerAuthDTO customerAuthDTO) {
+        try {
+            Customer customer = customerServices.getCustomerByEmail(customerAuthDTO.getEmail());
+            if (customer == null)
+                return ResponseEntity.ok("Message was send to you email account");//For safety purposes
+            emailService.sendPageMessage(
+                    customer.getEmail(),
+                    "Password reset TestMyEng.ru",
+                    emailService.assemblyEmailResetPasswordText(
+                            customer.getName(),
+                            customer.getEmail(),
+                            jwtUtil.generateToken(String.valueOf(customer.getId()))
+                    ));
+            return ResponseEntity.ok("Message was send to you email account");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
 }

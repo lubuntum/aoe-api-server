@@ -1,6 +1,5 @@
 package com.englishaoe.lesson.services.email;
 
-import com.englishaoe.lesson.dto.account.CustomerRegistrationDTO;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,9 @@ public class EmailService {
     String sender;
     @Value("${MAIL_REDIRECT_URL}")
     private String mailRedirectUrl;
-    public void sendRegistrationMessage(String to, String subject, String text) {
+    @Value("${MAIL_PASSWORD_RESET_REDIRECT_URL}")
+    private String passwordResetRedirectUrl;
+    public void sendMessage(String to, String subject, String text) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(to);
         mailMessage.setFrom(sender);
@@ -33,7 +34,7 @@ public class EmailService {
         mailMessage.setText(text);
         mailSender.send(mailMessage);
     }
-    public void sendPageRegistrationMessage(String to, String subject, String pageContent) throws MessagingException {
+    public void sendPageMessage(String to, String subject, String pageContent) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(to);
@@ -48,7 +49,15 @@ public class EmailService {
     public String assemblyEmailRegistrationText(String customerName, String token) throws IOException {
         Path pathToTemplate = resourceLoader
                 .getResource("classpath:templates/confirmation_email_template.html").getFile().toPath();
-        String template = new String(Files.readAllBytes((pathToTemplate)));
+        String template = new String(Files.readAllBytes(pathToTemplate));
         return String.format(template, customerName, String.format(mailRedirectUrl, token));
+    }
+    public String assemblyEmailResetPasswordText(String customerName, String email, String token) throws IOException {
+        Path pathToTemplate = resourceLoader
+                .getResource("classpath:templates/reset_password_email_template.html")
+                .getFile()
+                .toPath();
+        String template = new String(Files.readAllBytes(pathToTemplate));
+        return String.format(template, customerName, email, String.format(passwordResetRedirectUrl, token));
     }
 }
