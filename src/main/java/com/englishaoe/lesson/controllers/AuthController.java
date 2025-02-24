@@ -70,7 +70,7 @@ public class AuthController {
     public ResponseEntity<Boolean> resetPasswordAuth(@RequestHeader("Authorization") String token,
                                                     @RequestBody Map<String, String> resetData) {
         if (!customerServices.validateCustomerPassword(Long.valueOf(jwtUtil.extractSubject(token)), resetData.get("originalPassword")))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
         customerServices.resetPassword(Long.valueOf(jwtUtil.extractSubject(token)), resetData.get("password"));
         return ResponseEntity.ok().body(true);
     }
