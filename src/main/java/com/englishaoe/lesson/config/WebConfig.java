@@ -17,6 +17,8 @@ public class WebConfig implements WebMvcConfigurer {
     private String imageDir;
     @Value("${audio.folderDir}")
     private String voicesDir;
+    @Value("${templates.folderDir}")
+    private String templatesDir;
     @Autowired
     public WebConfig(Environment env){
         this.env = env;
@@ -36,5 +38,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:" + imageDir + "/");
         registry.addResourceHandler("/voices/**")
                 .addResourceLocations("file:" + voicesDir + "/");
+        registry.addResourceHandler("/templates/**")
+                .addResourceLocations("file:" + templatesDir + "/");
     }
 }

@@ -1,5 +1,6 @@
 package com.englishaoe.lesson.services.email;
 
+import com.englishaoe.lesson.utility.file.TemplateReadUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,10 @@ public class EmailService {
     private String mailRedirectUrl;
     @Value("${MAIL_PASSWORD_RESET_REDIRECT_URL}")
     private String passwordResetRedirectUrl;
+    @Value("${templates.folderDir}")
+    private String templatesDir;
+    private static final String CONFIRMATION_EMAIL_TEMPLATE = "confirmation_email_template.html";
+    private static final String RESET_PASSWORD_EMAIL_TEMPLATE = "reset_password_email_template.html";
     public void sendMessage(String to, String subject, String text) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(to);
@@ -47,17 +52,11 @@ public class EmailService {
         return String.format(mailRedirectUrl, token);
     }
     public String assemblyEmailRegistrationText(String customerName, String token) throws IOException {
-        Path pathToTemplate = resourceLoader
-                .getResource("classpath:templates/confirmation_email_template.html").getFile().toPath();
-        String template = new String(Files.readAllBytes(pathToTemplate));
+        String template = TemplateReadUtil.readTemplate(templatesDir, CONFIRMATION_EMAIL_TEMPLATE);
         return String.format(template, customerName, String.format(mailRedirectUrl, token));
     }
     public String assemblyEmailResetPasswordText(String customerName, String email, String token) throws IOException {
-        Path pathToTemplate = resourceLoader
-                .getResource("classpath:templates/reset_password_email_template.html")
-                .getFile()
-                .toPath();
-        String template = new String(Files.readAllBytes(pathToTemplate));
+        String template = TemplateReadUtil.readTemplate(templatesDir, RESET_PASSWORD_EMAIL_TEMPLATE);
         return String.format(template, customerName, email, String.format(passwordResetRedirectUrl, token));
     }
 }
