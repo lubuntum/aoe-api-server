@@ -10,7 +10,9 @@ import com.englishaoe.lesson.dto.authorization.LoginResponseDTO;
 import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.services.email.EmailService;
 import com.englishaoe.lesson.utility.JwtUtil;
+import com.englishaoe.lesson.utility.ParseUtil;
 import com.englishaoe.lesson.utility.PassValidationUtil;
+import com.google.gson.reflect.TypeToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.mail.MessagingException;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -63,11 +66,22 @@ public class AuthController {
             throw new RegularException("Please confirm your email", HttpStatus.FORBIDDEN.value());
         return ResponseEntity.ok(new LoginResponseDTO(jwtUtil.generateToken(String.valueOf(customerCredential.getId()))));
     }
+    @PostMapping("/reset-password-auth")
+    public ResponseEntity<Boolean> resetPasswordAuth(@RequestHeader("Authorization") String token,
+                                                    @RequestBody Map<String, String> resetData) {
+        if (!customerServices.validateCustomerPassword(Long.valueOf(jwtUtil.extractSubject(token)), resetData.get("originalPassword")))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        customerServices.resetPassword(Long.valueOf(jwtUtil.extractSubject(token)), resetData.get("password"));
+        return ResponseEntity.ok().body(true);
+    }
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestHeader("Authorization") String token,
-                                                @RequestBody CustomerAuthDTO customerAuthDTO) {
+                                                @RequestBody Map<String, String> resetData) {
         try {
-            customerServices.resetPassword(Long.valueOf(jwtUtil.extractSubject(token)), customerAuthDTO.getPassword());
+            if (resetData.get("password") == null)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No content provided");
+            CustomerAuthDTO tokenInfo = ParseUtil.deserialize(jwtUtil.extractSubject(token), new TypeToken<CustomerAuthDTO>(){});
+            customerServices.resetPassword(tokenInfo.getId(), resetData.get("password"));
             return ResponseEntity.ok().body("Password reset");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());

@@ -28,9 +28,13 @@ public class CustomerServices {
     public String getCustomerNameById(Long customerId) {
         return customerRepository.findNameById(customerId);
     }
+    public Boolean validateCustomerPassword(Long id, String password) {
+        return PassValidationUtil
+                .validatePassword(password, customerRepository.findPasswordById(id));
+    }
     public void resetPassword(Long customerId, String password) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(()->new RegularException("user doesn't exist", HttpStatus.FORBIDDEN.value()));
+                .orElseThrow(()->new RegularException("User doesn't exist", HttpStatus.FORBIDDEN.value()));
         customer.setPassword(PassValidationUtil.hashPassword(password));
         customerRepository.save(customer);
     }
