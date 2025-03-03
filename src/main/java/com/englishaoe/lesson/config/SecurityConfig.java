@@ -25,6 +25,7 @@ public class SecurityConfig {
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/voices/**").permitAll()// temp access
                         .requestMatchers("/templates/**").permitAll()
+                        .requestMatchers("/speaker/**").permitAll()
                         .anyRequest().authenticated() // Protect all other endpoints
                 );
         return http.build();
