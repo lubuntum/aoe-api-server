@@ -27,7 +27,7 @@ public interface VariantRepository extends JpaRepository<Variant, Long> {
     @Query("SELECT new com.englishaoe.lesson.dto.lesson.TaskDTO(t.id, t.taskContent, tt.type) " +
             "FROM Task t JOIN t.taskType tt " +
             "WHERE t.variantId = :variantId")
-    List<TaskDTO> findTasksByVariantId(@Param("variantId") Long variantId);
+    List<TaskDTO> findTasksDTOByVariantId(@Param("variantId") Long variantId);
     @Query("SELECT COUNT(v) FROM Variant v where isVisible=true")
     Integer countVisibleVariants();
 

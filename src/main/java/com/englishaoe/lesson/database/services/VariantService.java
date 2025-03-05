@@ -8,17 +8,20 @@ import com.englishaoe.lesson.database.repository.VariantRepository;
 import com.englishaoe.lesson.dto.lesson.TaskDTO;
 import com.englishaoe.lesson.dto.lesson.variant.VariantDTO;
 import com.englishaoe.lesson.dto.lesson.variant.VariantMapper;
+import com.englishaoe.lesson.exceptions.RegularException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class VariantService {
@@ -67,7 +70,7 @@ public class VariantService {
         return variantRepository.findAllById(variantsIds);
     }
     public List<TaskDTO> getTasksByVariantId(Long variantId){
-        return variantRepository.findTasksByVariantId(variantId);
+        return variantRepository.findTasksDTOByVariantId(variantId);
     }
     public Variant saveVariant(Variant variant) {
         return variantRepository.save(variant);
@@ -86,6 +89,16 @@ public class VariantService {
             taskRepository.save(task);
         }
     }
+    public void removeTasksByVariant(List<Task> tasks) {
+        for (Task task: tasks) {
+            taskRepository.delete(task);
+        }
+    }
+    public void removeTasksByVariantId(Long variantId) {
+        Variant variant = variantRepository.findById(variantId).orElseThrow(()-> new RegularException("Cant find variant", HttpStatus.NO_CONTENT.value()));
+        variant.getVariantTasks().clear();
+        variantRepository.save(variant);
+    }
     public Variant assembleVariant(String imagePath, String theme, String creationDate) {
         Variant variant = new Variant();
         variant.setTheme(theme);
@@ -102,6 +115,14 @@ public class VariantService {
         } catch (JsonProcessingException e) {
             return null;
         }
+    }
+    public Task findTaskFromVariantByType(Variant variant, Integer taskType) {
+        if (variant.getVariantTasks() == null || variant.getVariantTasks().isEmpty()) return null;
+        return variant.getVariantTasks().stream()
+                .filter(t -> Objects.equals(t.getTaskType().getType(), taskType))
+                .findFirst()
+                .orElse(null);
+
     }
     public void saveTask(Task task){
         taskRepository.save(task);
