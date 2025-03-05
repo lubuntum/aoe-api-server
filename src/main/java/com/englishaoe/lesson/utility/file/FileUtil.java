@@ -1,10 +1,14 @@
 package com.englishaoe.lesson.utility.file;
 
+import com.englishaoe.lesson.exceptions.RegularException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.html.HTML;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
@@ -22,6 +26,16 @@ public class FileUtil {
             return getStaticPath(folderPath) + filename;
         } catch (IOException e) {
             return e.getMessage();
+        }
+    }
+    public static Boolean deleteFileFromDir(String fileName, String folderPath) {
+        try{
+            Path filePath = Paths.get(folderPath, fileName);
+            return Files.deleteIfExists(filePath);
+        } catch (Exception e) {
+            //throw new RegularException("Error while deleting file", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            System.err.println("Error while deleting file: " + e.getMessage());
+            throw new RegularException("Error while deleting file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     private static String generateUniquePrefix() {
@@ -44,5 +58,8 @@ public class FileUtil {
     private static String getStaticPath(String absolutePath){
         String path = Paths.get(absolutePath).getFileName().toString();
         return (!path.endsWith("/")) ? path+"/" : path;
+    }
+    public static String extractFilename(String path){
+        return path.replaceFirst(".*/", "");
     }
 }
