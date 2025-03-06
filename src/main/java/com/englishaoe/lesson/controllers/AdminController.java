@@ -1,7 +1,6 @@
 package com.englishaoe.lesson.controllers;
 
 import com.englishaoe.lesson.database.entity.variants.TaskType;
-import com.englishaoe.lesson.database.entity.variants.TaskTypeEnum;
 import com.englishaoe.lesson.database.entity.variants.Variant;
 import com.englishaoe.lesson.database.services.CustomerServices;
 import com.englishaoe.lesson.database.services.TaskTypeService;
@@ -11,7 +10,6 @@ import com.englishaoe.lesson.exceptions.RegularException;
 import com.englishaoe.lesson.services.AuthorizationService;
 import com.englishaoe.lesson.services.file.VariantTasksFilesHandlerService;
 import com.englishaoe.lesson.utility.file.FileUtil;
-import org.aspectj.weaver.ast.Var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -144,23 +142,12 @@ public class AdminController {
                                               @RequestParam(value = "questionsRecords", required = false) List<MultipartFile> questionsRecords){
         if (!authorizationService.isCustomerAdmin(token))
             throw new RegularException("Access denied", HttpStatus.FORBIDDEN.value());
-        Variant variant = variantService.getVariantById(variantId);
         tasksJson = variantTasksFilesHandlerService.updateAllFilesForVariantTasks(variantService.getVariantById(variantId),tasksJson,
                 secondTaskImage, fourthTaskImageFirst, fourthTaskImageSecond, speakerRecord, questionsRecords);
         //TODO do the same and then update taskJson in variant with assemble function , remove old task, save new one
-        variantService.removeTasksByVariantId(variantId);
-        variantService.saveTasksByVariant(variantService.assembleTasks(tasksJson), variantId);
-        /*
-        * if (secondTaskImage != null) {
-            variantTasksFilesHandlerService.deleteFileFromVariantTask(
-                    variant, "img", TaskTypeEnum.SECOND.getTaskType(), imageFolderPath);
-            tasksJson = variantTasksFilesHandlerService.saveFileForVariantTask(
-                    tasksJson, "img", imageFolderPath, secondTaskImage);
-        }
-        * */
+        //variantService.removeTasksByVariantId(variantId);
+        variantService.updateTasksForVariant(variantService.assembleTasks(tasksJson), variantService.getVariantById(variantId));
 
-        //make updateImagesInVariant and updateRecordsInVariant (delete old one, and save new one + update json)
-        //remove old tasks, save new ones like in
         return ResponseEntity.ok("Variant updated");
     }
     @DeleteMapping("/delete-variant/{variantId}")
@@ -197,7 +184,7 @@ public class AdminController {
                 .saveImagesForVariantTask(tasksJson, secondTaskImage, fourthTaskImageFirst, fourthTaskImageSecond);
         tasksJson = variantTasksFilesHandlerService
                 .saveSpeakerRecordsForVariantTask(tasksJson, speakerRecord, questionsRecords);
-        variantService.saveTasksByVariant(variantService.assembleTasks(tasksJson), variantId);
+        variantService.createTasksForVariant(variantService.assembleTasks(tasksJson), variantId);
         return ResponseEntity.status(HttpStatus.CREATED).body("Tasks created");
     }
 

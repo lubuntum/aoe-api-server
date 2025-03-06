@@ -79,7 +79,16 @@ public class VariantService {
     public void deleteVariantById(Long variantId) {
         variantRepository.deleteById(variantId);
     }
-    public void saveTasksByVariant(List<TaskDTO> tasks, Long variantId) {
+    public void updateTasksForVariant(List<TaskDTO> tasks, Variant variant) {
+        if (variant.getVariantTasks() == null || variant.getVariantTasks().size() == 0)
+            return;
+        for(TaskDTO taskDTO : tasks)  {
+            Task task = findTaskFromVariantByType(variant, taskDTO.getTaskType());
+            task.setTaskContent(taskDTO.getTaskContent());
+        }
+        variantRepository.save(variant);
+    }
+    public void createTasksForVariant(List<TaskDTO> tasks, Long variantId) {
         for(TaskDTO taskDTO : tasks)  {
             Task task = new Task();
             task.setVariantId(variantId);

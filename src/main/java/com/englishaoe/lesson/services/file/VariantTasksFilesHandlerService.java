@@ -51,8 +51,11 @@ public class VariantTasksFilesHandlerService {
                                                    List<MultipartFile> questionsRecords) {
         try {
             taskJson = taskJson.replace("%speakerRecord", FileUtil.saveFileToDir(speakerRecord, speakerFolderPath, true));
-            for(int i = 0; i < questionsRecords.size();i++)
-                taskJson = taskJson.replace("%questionRecord"+i, FileUtil.saveFileToDir(questionsRecords.get(i), speakerFolderPath, true ));
+            for(int i = 0; i < questionsRecords.size();i++){//just add if (questionsRecords.get(i) == null) continue;
+                if (questionsRecords.get(i) == null) continue;
+                taskJson = taskJson.replace("%questionRecord"+i,
+                        FileUtil.saveFileToDir(questionsRecords.get(i), speakerFolderPath, true ));
+            }
             return taskJson;
         } catch (Exception e) {
             throw new RegularException("Error occurred while adding records", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -120,7 +123,7 @@ public class VariantTasksFilesHandlerService {
     }
     public String updateAllFilesForVariantTasks(Variant variant, String tasksJson, MultipartFile secondTaskImage,
                                               MultipartFile fourthTaskImageFirst, MultipartFile fourthTaskImageSecond,
-                                              MultipartFile speakerRecord, List<MultipartFile> questionsRecord){
+                                              MultipartFile speakerRecord, List<MultipartFile> questionsRecords){
         tasksJson = updateFileForVariantTask(variant, tasksJson, "img",
                 TaskTypeEnum.SECOND.getTaskType(), imageFolderPath, secondTaskImage);
         tasksJson = updateFileForVariantTask(variant, tasksJson, "firstImg",
@@ -129,6 +132,18 @@ public class VariantTasksFilesHandlerService {
                 TaskTypeEnum.FOURTH.getTaskType(), imageFolderPath, fourthTaskImageSecond);
         tasksJson = updateFileForVariantTask(variant, tasksJson, "speakerRecord",
                 THIRD.getTaskType(), speakerFolderPath, speakerRecord);
+        Task task = variantService.findTaskFromVariantByType(variant, THIRD.getTaskType());
+        List<String> originalFilesPath = JsonUtil.getArrayByKeyFromJson(task.getTaskContent(), "questionsRecords");
+        for(int i = 0; i < questionsRecords.size();i++) {
+            if (questionsRecords.get(i).getSize() == 0) continue;
+            try {
+                FileUtil.deleteFileFromDir(FileUtil.extractFilename(originalFilesPath.get(i)), speakerFolderPath);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+            tasksJson = tasksJson.replace("%questionRecord"+i,
+                    FileUtil.saveFileToDir(questionsRecords.get(i), speakerFolderPath, true ));
+        }
         return tasksJson;
     }
 
