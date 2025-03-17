@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -43,6 +44,8 @@ public class Customer {
     private String patronymic;
     @Column(name = "is_confirmed")
     private Boolean isConfirmed;
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
     @ManyToMany
     @JoinTable(
             name = "customer_role",

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController
@@ -64,6 +65,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         if (!customerServices.isCustomerEmailConfirmed(customerAuthDTO.getEmail()))
             throw new RegularException("Please confirm your email", HttpStatus.FORBIDDEN.value());
+        customerServices.updateLastLogin(LocalDateTime.now(), customerCredential.getId());
         return ResponseEntity.ok(new LoginResponseDTO(jwtUtil.generateToken(String.valueOf(customerCredential.getId()))));
     }
     @PostMapping("/reset-password-auth")

@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,17 @@ public class CustomerServices {
     private CustomerRepository customerRepository;
     @Autowired
     private RoleService roleService;
+    public void updateLastLogin(LocalDateTime dateTime, Long customerId) {
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new RegularException("Can't found customer", 403));
+        customer.setLastLogin(dateTime);
+        customerRepository.save(customer);
+    }
+    public Long getCountLoginCustomerByDate(LocalDateTime dateTime){
+        return customerRepository.findActiveCustomersCountByDate(dateTime);
+    }
+    public Long getCountRegisteredCustomers(){
+        return customerRepository.count();
+    }
 
     public String getCustomerNameById(Long customerId) {
         return customerRepository.findNameById(customerId);

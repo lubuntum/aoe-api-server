@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 //with JPQL
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
@@ -18,6 +19,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             " FROM Customer c WHERE c.id=:id")
     CustomerHeaderDTO findCustomerHeaderData(@Param("id") Long id);
     */
+    @Query("SELECT COUNT(c) FROM Customer c WHERE c.lastLogin >= :dateTime")
+    Long findActiveCustomersCountByDate(LocalDateTime dateTime);
     @Query("SELECT c FROM Customer c LEFT JOIN FETCH c.roles WHERE c.id = :id")
     Customer findCustomerWithRoles(@Param("id") Long id);
     @Query("SELECT new com.englishaoe.lesson.dto.account.CustomerAccountDTO(" +
