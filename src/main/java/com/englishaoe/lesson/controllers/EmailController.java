@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api/email")
 public class EmailController {
@@ -42,7 +44,10 @@ public class EmailController {
     @GetMapping("/confirm")
     public ResponseEntity<Boolean> confirmEmail(@RequestHeader("Authorization") String token){
         try {
-            return ResponseEntity.ok(customerServices.confirmCustomerEmail(Long.valueOf(jwtUtil.extractSubject(token))));
+            return ResponseEntity.ok(
+                    customerServices.confirmCustomerEmailWithBonus(
+                            Long.valueOf(jwtUtil.extractSubject(token)),
+                            new BigDecimal(200)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
