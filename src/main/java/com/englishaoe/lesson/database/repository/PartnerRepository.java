@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PartnerRepository extends JpaRepository<Partner, Long> {
@@ -56,5 +57,9 @@ public interface PartnerRepository extends JpaRepository<Partner, Long> {
     @Query("UPDATE Partner p SET p.revenue = :revenue WHERE p.id = :id")
     void updatePartnerRevenue(Long id, BigDecimal revenue);
 
+    @Query("SELECT COUNT(*) FROM Partner where isApproved=true")
+    Long findApprovedPartnersCount();
 
+    //query for get all acrive customer with partner role
+    //select count(*) from customer c inner join customer_role c_r on c.id=c_r.customer_id where c_r.role_id = 3 and c.last_login >= '2025-02-18 16:17:27.89451';
 }

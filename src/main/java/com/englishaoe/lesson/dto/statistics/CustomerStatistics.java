@@ -1,19 +1,20 @@
 package com.englishaoe.lesson.dto.statistics;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 public class CustomerStatistics {
-    Long accountsRegistered;
-    Long activeAccountsByWeek;
-    Long activeAccountsByMonth;
+    Long customersRegistered;
+    Long currentOnline;
+    Long activeCustomersByWeek;
+    Long activeCustomersByMonth;
 
-    public CustomerStatistics(Long accountsRegistered, Long activeAccountsByWeek, Long activeAccountsByMonth) {
-        this.accountsRegistered = accountsRegistered;
-        this.activeAccountsByWeek = activeAccountsByWeek;
-        this.activeAccountsByMonth = activeAccountsByMonth;
+    public CustomerStatistics(Long customersRegistered, Long currentOnline, Long activeCustomersByWeek, Long activeCustomersByMonth) {
+        this.customersRegistered = customersRegistered;
+        this.currentOnline = currentOnline;
+        this.activeCustomersByWeek = activeCustomersByWeek;
+        this.activeCustomersByMonth = activeCustomersByMonth;
     }
 }

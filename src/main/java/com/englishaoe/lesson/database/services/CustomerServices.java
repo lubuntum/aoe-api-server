@@ -13,6 +13,7 @@ import com.englishaoe.lesson.utility.PassValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,9 +34,13 @@ public class CustomerServices {
     public Long getCountLoginCustomerByDate(LocalDateTime dateTime){
         return customerRepository.findActiveCustomersCountByDate(dateTime);
     }
+    public Long getCountLoginCustomerByDateAndRole(LocalDateTime dateTime, RoleEnum roleEnum) {
+        return customerRepository.findActiveCustomerCountByRoleAndDate(dateTime, roleEnum.getRole());
+    }
     public Long getCountRegisteredCustomers(){
         return customerRepository.count();
     }
+
 
     public String getCustomerNameById(Long customerId) {
         return customerRepository.findNameById(customerId);
@@ -55,6 +60,18 @@ public class CustomerServices {
                 .orElseThrow(()-> new RegularException("User doesn't exist", HttpStatus.FORBIDDEN.value()));
         if (customer.getIsConfirmed()) return true;
         customer.setIsConfirmed(true);
+        customerRepository.save(customer);
+        return true;
+    }
+    @Transactional
+    public Boolean confirmCustomerEmailWithBonus(Long customerId, BigDecimal bonus){
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(()-> new RegularException("User doesn't exist", HttpStatus.FORBIDDEN.value()));
+        if (customer.getIsConfirmed()) return true;
+        customer.setIsConfirmed(true);
+        BigDecimal currentBalance =
+                Optional.ofNullable(customer.getCurrentBalance()).orElse(BigDecimal.ZERO);
+        customer.setCurrentBalance(currentBalance.add(bonus));
         customerRepository.save(customer);
         return true;
     }

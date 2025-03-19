@@ -31,6 +31,10 @@ public class PartnerService {
     @Autowired
     PartnershipRepository partnershipRepository;
 
+    public Long getAllApprovedPartnerCount(){
+        return partnerRepository.findApprovedPartnersCount();
+    }
+
     public void createNotApprovedPartnerForCustomerAccount(CustomerRegistrationDTO accountData){
         Partner partner = new Partner();
         partner.setCustomerId(accountData.getCustomerId());

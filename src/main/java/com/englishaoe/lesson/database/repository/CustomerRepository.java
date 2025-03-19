@@ -1,10 +1,12 @@
 package com.englishaoe.lesson.database.repository;
 
 import com.englishaoe.lesson.database.entity.Customer;
+import com.englishaoe.lesson.database.entity.role.RoleEnum;
 import com.englishaoe.lesson.dto.authorization.CustomerAuthDTO;
 import com.englishaoe.lesson.dto.authorization.LoginResponseDTO;
 import com.englishaoe.lesson.dto.account.CustomerAccountDTO;
 import com.englishaoe.lesson.dto.account.CustomerHeaderDTO;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +23,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     */
     @Query("SELECT COUNT(c) FROM Customer c WHERE c.lastLogin >= :dateTime")
     Long findActiveCustomersCountByDate(LocalDateTime dateTime);
+    @Query("SELECT COUNT(c) FROM Customer c " +
+            "JOIN c.roles r " +
+            "where r.name=:roleName AND c.lastLogin >= :dateTime")
+    Long findActiveCustomerCountByRoleAndDate(LocalDateTime dateTime, String roleName);
     @Query("SELECT c FROM Customer c LEFT JOIN FETCH c.roles WHERE c.id = :id")
     Customer findCustomerWithRoles(@Param("id") Long id);
     @Query("SELECT new com.englishaoe.lesson.dto.account.CustomerAccountDTO(" +

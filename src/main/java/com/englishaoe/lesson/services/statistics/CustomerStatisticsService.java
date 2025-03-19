@@ -15,6 +15,7 @@ public class CustomerStatisticsService {
     CustomerStatistics getStatisticsByCustomersActivity(){
         return new CustomerStatistics(
                 customerServices.getCountRegisteredCustomers(),
+                customerServices.getCountLoginCustomerByDate(LocalDateTime.now().minusHours(3)),
                 customerServices.getCountLoginCustomerByDate(LocalDateTime.now().minusWeeks(1)),
                 customerServices.getCountLoginCustomerByDate(LocalDateTime.now().minusMonths(1))
         );
