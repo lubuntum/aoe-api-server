@@ -19,6 +19,6 @@ public class PartnerStatisticsService {
         return new PartnerStatistics(
                 partnerService.getAllApprovedPartnerCount(),
                 customerServices.getCountLoginCustomerByDateAndRole(LocalDateTime.now().minusWeeks(1), RoleEnum.PARTNER),
-                customerServices.getCountLoginCustomerByDateAndRole(LocalDateTime.now().minusHours(1), RoleEnum.PARTNER));
+                customerServices.getCountLoginCustomerByDateAndRole(LocalDateTime.now().minusMonths(1), RoleEnum.PARTNER));
     }
 }
