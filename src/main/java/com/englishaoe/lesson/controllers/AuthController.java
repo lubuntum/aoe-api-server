@@ -63,7 +63,7 @@ public class AuthController {
         if (customerCredential == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         if (!PassValidationUtil.validatePassword(customerAuthDTO.getPassword(), customerCredential.getPassword()))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        if (!customerServices.isCustomerEmailConfirmed(customerAuthDTO.getEmail()))
+        if (!customerServices.isCustomerEmailConfirmed(customerCredential.getEmail()))
             throw new RegularException("Please confirm your email", HttpStatus.FORBIDDEN.value());
         customerServices.updateLastLogin(LocalDateTime.now(), customerCredential.getId());
         return ResponseEntity.ok(new LoginResponseDTO(jwtUtil.generateToken(String.valueOf(customerCredential.getId()))));
